@@ -18,7 +18,11 @@
             background-color: #2a2154;
         }
         .glow {
-            box-shadow: 0 0 15px 5px rgba(255, 223, 0, 0.4), 0 0 20px 10px rgba(255, 223, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 223, 0, 0.4), 0 0 20px 10px rgba(255, 223, 0, 0.2); }
+            50% { box-shadow: 0 0 25px 10px rgba(255, 223, 0, 0.6), 0 0 30px 15px rgba(255, 223, 0, 0.3); }
         }
         .path-glow {
              filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.9));
@@ -34,11 +38,8 @@
             50% { box-shadow: 0 0 30px 15px rgba(251, 191, 36, 0.5), 0 0 45px 30px rgba(251, 191, 36, 0.2); }
             100% { box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0.3), 0 0 30px 20px rgba(251, 191, 36, 0.1); }
         }
-        /* Hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* General option button style */
         .option-btn { transition: all 0.2s ease-in-out; }
         .option-btn.selected {
             background-color: #4a3a8a;
@@ -46,54 +47,16 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-
-        /* Matching game styles */
-        .match-item {
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .match-item.selected {
-            background-color: #4a3a8a;
-            border-color: #a855f7;
-            transform: scale(1.05);
-        }
-        .match-item.correct {
-            background-color: #22c55e;
-            border-color: #4ade80;
-            color: white;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        .match-item.incorrect {
-            background-color: #ef4444;
-            border-color: #f87171;
-            animation: shake 0.5s;
-        }
+        .match-item { transition: all 0.2s ease; cursor: pointer; }
+        .match-item.selected { background-color: #4a3a8a; border-color: #a855f7; transform: scale(1.05); }
+        .match-item.correct { background-color: #22c55e; border-color: #4ade80; color: white; opacity: 0.7; pointer-events: none; }
+        .match-item.incorrect { background-color: #ef4444; border-color: #f87171; animation: shake 0.5s; }
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); }
         }
-
-        /* Fill in the blank styles */
-        .blank-space {
-            border-bottom: 2px dashed #6b7280;
-            padding: 0 1em;
-            display: inline-block;
-            min-width: 100px;
-            text-align: center;
-            font-weight: bold;
-            color: #d8b4fe;
-        }
-        .word-bank-btn {
-            transition: all 0.2s ease;
-        }
-        .word-bank-btn.selected {
-            background-color: #6d28d9;
-            color: white;
-            opacity: 0.5;
-            pointer-events: none;
-        }
+        .blank-space { border-bottom: 2px dashed #6b7280; padding: 0 1em; display: inline-block; min-width: 100px; text-align: center; font-weight: bold; color: #d8b4fe; }
+        .word-bank-btn { transition: all 0.2s ease; }
+        .word-bank-btn.selected { background-color: #6d28d9; color: white; opacity: 0.5; pointer-events: none; }
     </style>
 </head>
 <body class="text-white overflow-hidden">
@@ -101,39 +64,27 @@
     <div id="app-container" class="h-screen w-screen max-w-sm mx-auto">
         <!-- Main Menu View -->
         <div id="main-view" class="flex flex-col h-full bg-main">
-            <!-- Header -->
             <header class="flex items-center justify-between p-4 z-10">
+                <div class="flex items-center gap-3"><img src="https://placehold.co/44x44/c4b5fd/4c1d95?text=CQ&font=inter" alt="Avatar" class="rounded-full border-2 border-purple-300"><span id="xp-main" class="font-bold text-lg">750 XP</span></div>
                 <div class="flex items-center gap-3">
-                    <img src="https://placehold.co/44x44/c4b5fd/4c1d95?text=CQ&font=inter" alt="Avatar" class="rounded-full border-2 border-purple-300">
-                    <span id="xp-main" class="font-bold text-lg">750 XP</span>
-                </div>
-                <div class="flex items-center gap-3">
-                     <div class="flex items-center gap-2 bg-red-500/80 px-3 py-1 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FFC0CB" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                        <span id="lives-main" class="font-bold text-base">5</span>
-                    </div>
-                     <div class="flex items-center gap-2 bg-purple-500/80 px-3 py-1 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span class="font-bold text-base">15</span>
-                    </div>
+                     <div class="flex items-center gap-2 bg-red-500/80 px-3 py-1 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FFC0CB" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span id="lives-main" class="font-bold text-base">5</span></div>
+                     <div class="flex items-center gap-2 bg-purple-500/80 px-3 py-1 rounded-xl"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="font-bold text-base">15</span></div>
                 </div>
             </header>
             <main class="flex-1 overflow-y-auto relative no-scrollbar">
-                <div class="absolute bottom-[-20px] left-[-30px] w-48 h-48 z-10">
-                     <img src="images/11.png" alt="Lady Justice Character" class="w-full h-full object-contain">
-                </div>
+                <div class="absolute bottom-[-20px] left-[-30px] w-48 h-48 z-10"><img src="images/11.png" alt="Lady Justice Character" class="w-full h-full object-contain"></div>
                 <div class="absolute inset-x-0 top-0 h-full flex justify-center items-center z-0">
                     <svg width="200" height="600" viewBox="0 0 200 600" class="path-glow">
                         <path d="M 100 580 C 180 530, 20 480, 100 430 S 180 330, 100 280 S 20 180, 100 130 S 180 30, 100 30" stroke="url(#gradient)" stroke-width="8" fill="none" stroke-linecap="round"/>
                          <defs><linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#e879f9;stop-opacity:1" /></linearGradient></defs>
                     </svg>
                 </div>
-                <div class="relative z-20 h-[800px] w-full max-w-sm mx-auto">
-                     <div class="absolute" style="top: 92%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center border-4 border-green-300 mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg></div><p class="font-bold text-sm">INTRODUCTION</p></div></div>
-                     <div class="absolute" style="top: 70%; left: 15%;"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Article I</p><div class="bg-gray-700 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
-                    <div class="absolute" style="top: 45%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="bg-yellow-400 w-24 h-24 rounded-full flex items-center justify-center border-4 border-yellow-200 mb-3 glow"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 2a3.1 3.1 0 0 1 3.1 3.1v1.8a3.1 3.1 0 1 1-6.2 0V5.1A3.1 3.1 0 0 1 12 2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div><p class="font-bold text-lg">Freedom of Speech</p><button id="start-lesson-btn" class="mt-2 bg-white text-purple-700 font-bold py-2 px-6 rounded-xl shadow-lg uppercase tracking-wider text-sm">Start Lesson</button></div></div>
-                    <div class="absolute" style="top: 20%; left: 85%; transform: translateX(-100%);"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Article II</p><div class="bg-gray-700 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
-                     <div class="absolute" style="top: 0%; left: 50%; transform: translateX(-50%);"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Right to Vote</p><div class="bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
+                <div id="levels-container" class="relative z-20 h-[800px] w-full max-w-sm mx-auto">
+                     <div id="level-0" class="level-tile absolute" style="top: 92%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="level-icon-wrapper w-16 h-16 rounded-full flex items-center justify-center border-4 mb-2"></div><p class="level-title font-bold text-sm">Introduction</p></div></div>
+                     <div id="level-1" class="level-tile absolute" style="top: 70%; left: 15%;"><div class="text-center"><div class="level-icon-wrapper w-14 h-14 rounded-full flex items-center justify-center border-4 mb-2"></div><p class="level-title font-bold text-sm">Article I</p></div></div>
+                    <div id="level-2" class="level-tile absolute" style="top: 45%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="level-icon-wrapper w-24 h-24 rounded-full flex items-center justify-center border-4 mb-3"></div><p class="level-title font-bold">Freedom of Speech</p></div></div>
+                    <div id="level-3" class="level-tile absolute" style="top: 20%; left: 85%; transform: translateX(-100%);"><div class="text-center"><div class="level-icon-wrapper w-14 h-14 rounded-full flex items-center justify-center border-4 mb-2"></div><p class="level-title font-bold text-sm">Article II</p></div></div>
+                     <div id="level-4" class="level-tile absolute" style="top: 0%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="level-icon-wrapper w-16 h-16 rounded-full flex items-center justify-center border-4 mb-2"></div><p class="level-title font-bold text-sm">Right to Vote</p></div></div>
                 </div>
             </main>
             <footer class="grid grid-cols-4 gap-2 p-3 bg-slate-900/40 border-t border-purple-400/20 z-10">
@@ -144,28 +95,18 @@
             </footer>
         </div>
 
-        <!-- Lesson View -->
         <div id="lesson-view" class="hidden flex-col h-full bg-lesson p-5">
             <header class="flex items-center gap-4 mb-6">
                  <button id="close-lesson-btn"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                  <div class="w-full bg-gray-600 rounded-full h-4"><div id="progress-bar" class="bg-green-500 h-4 rounded-full progress-bar-inner" style="width: 0%"></div></div>
-                 <div class="flex items-center gap-1">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FFC0CB" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                     <span id="lives-lesson" class="font-bold text-red-400 text-lg">5</span>
-                 </div>
+                 <div class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FFC0CB" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span id="lives-lesson" class="font-bold text-red-400 text-lg">5</span></div>
             </header>
             <main class="flex-1 flex flex-col justify-between">
-                <div>
-                    <h1 id="question-title" class="text-2xl font-bold mb-8 text-center"></h1>
-                    <div id="question-content"></div>
-                </div>
-                <div class="w-full">
-                     <button id="check-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>Check</button>
-                </div>
+                <div><h1 id="question-title" class="text-2xl font-bold mb-8 text-center"></h1><div id="question-content"></div></div>
+                <div class="w-full"><button id="check-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>Check</button></div>
             </main>
         </div>
         
-        <!-- Feedback Footer -->
         <div id="feedback-footer" class="hidden absolute bottom-0 left-0 right-0 max-w-sm mx-auto p-5">
             <div id="feedback-content" class="flex items-center justify-between p-4 rounded-xl">
                  <div><h3 id="feedback-title" class="font-bold text-xl"></h3><p id="feedback-text"></p></div>
@@ -173,267 +114,285 @@
             </div>
         </div>
 
-        <!-- Completion View -->
         <div id="completion-view" class="hidden flex-col h-full bg-lesson p-8 text-center justify-center">
             <h1 class="text-4xl font-bold text-yellow-400 mb-4">Lesson Complete!</h1>
-            <div class="w-32 h-32 bg-yellow-500/20 rounded-full flex items-center justify-center mb-8 fire-glow mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="orange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-            </div>
+            <div class="w-32 h-32 bg-yellow-500/20 rounded-full flex items-center justify-center mb-8 fire-glow mx-auto"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="orange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
             <div class="flex justify-around w-full mb-12">
                 <div><p class="text-3xl font-bold" id="final-score">0</p><p class="text-gray-400 uppercase text-sm">Score</p></div>
                 <div><p class="text-3xl font-bold text-green-400" id="final-xp">+0</p><p class="text-gray-400 uppercase text-sm">XP Gained</p></div>
                 <div><p class="text-3xl font-bold" id="final-time">0s</p><p class="text-gray-400 uppercase text-sm">Time</p></div>
             </div>
-            <button id="finish-lesson-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg">Continue</button>
+            <button id="finish-lesson-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg">Let's Go!</button>
         </div>
     </div>
 
     <script>
-        // --- DATA ---
-        const quizData = [
-            { type: 'multiple-choice', question: "Which of these is protected by 'Freedom of Speech'?", options: [{ text: "Shouting 'fire' in a crowded theater when there is no fire.", correct: false, explanation: "This can cause panic and harm." },{ text: "Writing an article criticizing a government policy.", correct: true, explanation: "Criticism of government is a core protected speech." },{ text: "Making threats against another person.", correct: false, explanation: "Direct threats are not protected speech." }]},
-            { type: 'match', question: "Match the branch to its function.", pairs: [{ term: 'Legislative', definition: 'Makes laws' }, { term: 'Executive', definition: 'Enforces laws' }, { term: 'Judicial', definition: 'Interprets laws' }]},
-            { type: 'fill-in-the-blank', question: "Complete the sentence.", sentenceParts: ["The first ten amendments to the Constitution are called the ", "."], correctAnswer: "Bill of Rights", wordBank: ["Preamble", "Bill of Rights", "Declaration"]},
-            { type: 'multiple-choice', question: "Can you say anything without any consequences under 'Freedom of Speech'?", options: [{ text: "Yes, it's an absolute right.", correct: false, explanation: "The right is not absolute and has limits." },{ text: "No, there are limitations like defamation and incitement.", correct: true, explanation: "The law balances free speech with protection from harm." },{ text: "Only if you are a journalist.", correct: false, explanation: "This right applies to all citizens." }]}
-        ];
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainView = document.getElementById('main-view'), lessonView = document.getElementById('lesson-view'), completionView = document.getElementById('completion-view');
+            const closeLessonBtn = document.getElementById('close-lesson-btn'), finishLessonBtn = document.getElementById('finish-lesson-btn');
+            const questionTitle = document.getElementById('question-title'), questionContent = document.getElementById('question-content'), checkBtn = document.getElementById('check-btn');
+            const feedbackFooter = document.getElementById('feedback-footer'), feedbackContent = document.getElementById('feedback-content'), feedbackTitle = document.getElementById('feedback-title'), feedbackText = document.getElementById('feedback-text'), continueBtn = document.getElementById('continue-btn');
+            const progressBar = document.getElementById('progress-bar'), livesMain = document.getElementById('lives-main'), livesLesson = document.getElementById('lives-lesson'), xpMain = document.getElementById('xp-main');
 
-        // --- DOM ELEMENTS ---
-        const mainView = document.getElementById('main-view'), lessonView = document.getElementById('lesson-view'), completionView = document.getElementById('completion-view');
-        const startLessonBtn = document.getElementById('start-lesson-btn'), closeLessonBtn = document.getElementById('close-lesson-btn'), finishLessonBtn = document.getElementById('finish-lesson-btn');
-        const questionTitle = document.getElementById('question-title'), questionContent = document.getElementById('question-content'), checkBtn = document.getElementById('check-btn');
-        const feedbackFooter = document.getElementById('feedback-footer'), feedbackContent = document.getElementById('feedback-content'), feedbackTitle = document.getElementById('feedback-title'), feedbackText = document.getElementById('feedback-text'), continueBtn = document.getElementById('continue-btn');
-        const progressBar = document.getElementById('progress-bar'), livesMain = document.getElementById('lives-main'), livesLesson = document.getElementById('lives-lesson'), xpMain = document.getElementById('xp-main');
+            let currentLevelIndex = 0, currentQuestionIndex = 0, lives = 5, totalXp = 750, score = 0, lessonStartTime;
+            let selectedAnswer = null, selectedMatchTerm = null, matchedPairs = 0;
 
-        // --- STATE ---
-        let currentQuestionIndex = 0, lives = 5, totalXp = 750, score = 0, lessonStartTime;
-        let selectedAnswer = null, selectedMatchTerm = null, matchedPairs = 0;
+            const lockIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+            const levelIcons = [
+                `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M4 6h16M4 12h16M4 18h16"/></svg>`,
+                `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>`,
+                `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 2a3.1 3.1 0 0 1 3.1 3.1v1.8a3.1 3.1 0 1 1-6.2 0V5.1A3.1 3.1 0 0 1 12 2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>`,
+                `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.56 1.25.5 2.5 1 4 1v-1.12c0-1.5-1.25-2.75-2.5-3.25s-2.5-.5-4-1.5c-1.5-1-2.5-2.25-2.5-4.25v-1.5c0-2-1-3.25-2.5-4.25s-2.5-1-4-1.5c-1.25-.5-2.5-1-2.5-2.75v1.12c0 1.5 1.25 2.75 2.5 3.25s2.5.5 4 1.5c1.5 1 2.5 2.25 2.5 4.25v1.5c0 2 1 3.25 2.5 4.25s2.5 1 4 1.5c1.25.5 2.5 1 2.5 2.75v0Z"/></svg>`,
+                `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 22H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4"/></svg>`
+            ];
+            
+            const levelData = [
+                { id: 'level-0', status: 'active', quiz: [
+                    { type: 'multiple-choice', question: "What is a constitution?", options: [{ text: "A list of kings", correct: false, explanation: "That's a monarchy's line of succession." },{ text: "A country's rulebook", correct: true, explanation: "It sets up the government and protects rights." },{ text: "A collection of stories", correct: false, explanation: "That would be an anthology." }]},
+                    { type: 'fill-in-the-blank', question: "The U.S. Constitution was written in...", sentenceParts: ["The U.S. Constitution was written in the year ", "."], correctAnswer: "1787", wordBank: ["1492", "1776", "1787"]},
+                    { type: 'match', question: "Match the founder to their role.", pairs: [{ term: 'James Madison', definition: 'Father of the Constitution' }, { term: 'George Washington', definition: 'President of the Convention' }, { term: 'Benjamin Franklin', definition: 'Elder Statesman' }]},
+                ]},
+                { id: 'level-1', status: 'locked', quiz: [
+                     { type: 'multiple-choice', question: "What are the two parts of the U.S. Congress?", options: [{ text: "The Senate & House of Representatives", correct: true, explanation: "Correct! This is a bicameral legislature." },{ text: "The President & Vice President", correct: false, explanation: "They are part of the Executive Branch." },{ text: "The Supreme Court & Federal Courts", correct: false, explanation: "Those make up the Judicial Branch." }]},
+                     { type: 'fill-in-the-blank', question: "The House of Representatives has how many voting members?", sentenceParts: ["There are ", " voting members in the House."], correctAnswer: "435", wordBank: ["100", "50", "435"]},
+                     { type: 'match', question: "Match the power to the branch.", pairs: [{ term: 'Declare War', definition: 'Congress' }, { term: 'Veto Bills', definition: 'President' }, { term: 'Rule laws unconstitutional', definition: 'Supreme Court' }]},
+                ]},
+                { id: 'level-2', status: 'locked', quiz: [
+                    { type: 'multiple-choice', question: "Which of these is protected by 'Freedom of Speech'?", options: [{ text: "Shouting 'fire' in a crowded theater with no fire.", correct: false, explanation: "This can cause panic and harm." },{ text: "Writing an article criticizing a government policy.", correct: true, explanation: "Criticism of government is a core protected speech." },{ text: "Making direct threats against another person.", correct: false, explanation: "Direct threats are not protected speech." }]},
+                    { type: 'match', question: "Match the concept to its meaning.", pairs: [{ term: 'Libel', definition: 'Written defamation' }, { term: 'Slander', definition: 'Spoken defamation' }, { term: 'Incitement', definition: 'Urging unlawful acts' }]},
+                    { type: 'multiple-choice', question: "Does 'Freedom of Speech' mean you can say anything without consequences?", options: [{ text: "Yes, it's an absolute right.", correct: false, explanation: "The right is not absolute and has well-defined limits." },{ text: "No, there are limitations like defamation.", correct: true, explanation: "The law balances free speech with protection from harm." }]}
+                ]},
+                { id: 'level-3', status: 'locked', quiz: [
+                    { type: 'multiple-choice', question: "Who is the head of the Executive Branch?", options: [{ text: "The Speaker of the House", correct: false, explanation: "That person leads the House of Representatives." },{ text: "The Chief Justice", correct: false, explanation: "That person leads the Supreme Court." },{ text: "The President", correct: true, explanation: "The President is the Commander-in-Chief." }]},
+                    { type: 'fill-in-the-blank', question: "A President can serve a maximum of how many terms?", sentenceParts: ["A President can serve a maximum of ", " terms."], correctAnswer: "Two", wordBank: ["One", "Two", "Four"]},
+                    { type: 'match', question: "Match the department to its function.", pairs: [{ term: 'Dept. of Treasury', definition: 'Manages money' }, { term: 'Dept. of Defense', definition: 'Manages the military' }, { term: 'Dept. of State', definition: 'Manages foreign relations' }]},
+                ]},
+                { id: 'level-4', status: 'locked', quiz: [
+                    { type: 'multiple-choice', question: "Which amendment gave women the right to vote?", options: [{ text: "1st Amendment", correct: false, explanation: "That protects freedom of speech." },{ text: "19th Amendment", correct: true, explanation: "Ratified in 1920, a major step for suffrage." },{ text: "15th Amendment", correct: false, explanation: "That granted voting rights regardless of race." }]},
+                    { type: 'fill-in-the-blank', question: "The 26th Amendment lowered the voting age from 21 to...", sentenceParts: ["The voting age was lowered to ", "."], correctAnswer: "18", wordBank: ["16", "20", "18"]},
+                    { type: 'multiple-choice', question: "What was a 'poll tax'?", options: [{ text: "A fee to vote, used to stop poor people from voting.", correct: true, explanation: "It was banned by the 24th Amendment." },{ text: "A survey taken at the polls.", correct: false, explanation: "That's an exit poll." },{ text: "A tax on telephone poles.", correct: false, explanation: "That is incorrect." }]},
+                ]}
+            ];
 
-        // --- QUESTION LOADERS ---
-        function loadQuestion(index) {
-            resetQuestionState();
-            const questionData = quizData[index];
-            questionTitle.innerText = questionData.question;
-            const progressPercentage = (index / quizData.length) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
+            function renderLevels() {
+                levelData.forEach((level, index) => {
+                    const levelElement = document.getElementById(level.id);
+                    const iconWrapper = levelElement.querySelector('.level-icon-wrapper');
+                    const titleElement = levelElement.querySelector('.level-title');
+                    levelElement.querySelector('.start-lesson-btn')?.remove();
+                    iconWrapper.classList.remove('glow', 'bg-green-500', 'border-green-300', 'bg-yellow-400', 'border-yellow-200', 'bg-gray-700', 'border-gray-600');
+                    titleElement.classList.remove('text-lg');
 
-            switch (questionData.type) {
-                case 'multiple-choice': loadMultipleChoice(questionData); break;
-                case 'match': loadMatch(questionData); break;
-                case 'fill-in-the-blank': loadFillInBlank(questionData); break;
-            }
-        }
-
-        function loadMultipleChoice(data) {
-            questionContent.innerHTML = `<div class="space-y-3"></div>`;
-            const container = questionContent.querySelector('.space-y-3');
-            data.options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'option-btn w-full text-left p-4 bg-slate-800/50 border-2 border-gray-600 rounded-xl text-lg font-semibold';
-                button.innerText = option.text;
-                button.onclick = () => {
-                    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    selectedAnswer = button;
-                    checkBtn.disabled = false;
-                };
-                container.appendChild(button);
-            });
-        }
-
-        function loadMatch(data) {
-            const terms = data.pairs.map(p => p.term);
-            const definitions = data.pairs.map(p => p.definition).sort(() => Math.random() - 0.5); // Shuffle definitions
-            questionContent.innerHTML = `
-                <div class="flex justify-between gap-3">
-                    <div id="match-terms" class="flex-1 space-y-3"></div>
-                    <div id="match-defs" class="flex-1 space-y-3"></div>
-                </div>`;
-            const termsContainer = document.getElementById('match-terms');
-            const defsContainer = document.getElementById('match-defs');
-
-            terms.forEach(term => termsContainer.appendChild(createMatchButton(term, 'term', term)));
-            definitions.forEach(def => {
-                const termForDef = data.pairs.find(p => p.definition === def).term;
-                defsContainer.appendChild(createMatchButton(def, 'def', termForDef));
-            });
-        }
-        
-        function createMatchButton(text, type, matchId) {
-            const button = document.createElement('button');
-            button.className = 'match-item w-full p-3 bg-slate-800/50 border-2 border-gray-600 rounded-xl font-semibold';
-            button.innerText = text;
-            button.dataset.matchId = matchId;
-            button.dataset.type = type;
-            button.onclick = handleMatchClick;
-            return button;
-        }
-
-        function loadFillInBlank(data) {
-            questionContent.innerHTML = `
-                <div class="text-center text-xl bg-slate-800/50 p-6 rounded-lg mb-8">
-                    ${data.sentenceParts[0]}<span id="blank-space" class="blank-space"></span>${data.sentenceParts[1]}
-                </div>
-                <div id="word-bank" class="flex justify-center gap-3 flex-wrap"></div>`;
-            const wordBankContainer = document.getElementById('word-bank');
-            data.wordBank.forEach(word => {
-                const button = document.createElement('button');
-                button.className = 'word-bank-btn bg-slate-700 p-3 px-5 rounded-lg font-bold';
-                button.innerText = word;
-                button.onclick = () => {
-                    document.getElementById('blank-space').innerText = word;
-                    document.querySelectorAll('.word-bank-btn').forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    selectedAnswer = word;
-                    checkBtn.disabled = false;
-                };
-                wordBankContainer.appendChild(button);
-            });
-        }
-
-        // --- EVENT HANDLERS ---
-        function handleMatchClick(e) {
-            const clicked = e.target;
-            if (clicked.dataset.type === 'term') {
-                document.querySelectorAll('.match-item[data-type="term"]').forEach(btn => btn.classList.remove('selected'));
-                clicked.classList.add('selected');
-                selectedMatchTerm = clicked;
-            } else if (clicked.dataset.type === 'def' && selectedMatchTerm) {
-                if (clicked.dataset.matchId === selectedMatchTerm.dataset.matchId) {
-                    clicked.classList.add('correct');
-                    selectedMatchTerm.classList.add('correct');
-                    selectedMatchTerm = null;
-                    matchedPairs++;
-                    if (matchedPairs === quizData[currentQuestionIndex].pairs.length) {
-                        checkBtn.disabled = false;
+                    switch (level.status) {
+                        case 'completed':
+                            iconWrapper.classList.add('bg-green-500', 'border-green-300');
+                            iconWrapper.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                            break;
+                        case 'active':
+                            iconWrapper.classList.add('bg-yellow-400', 'border-yellow-200', 'glow');
+                            iconWrapper.innerHTML = levelIcons[index];
+                            titleElement.classList.add('text-lg');
+                            const button = document.createElement('button');
+                            button.className = 'start-lesson-btn mt-2 bg-white text-purple-700 font-bold py-2 px-6 rounded-xl shadow-lg uppercase tracking-wider text-sm';
+                            button.innerText = 'Start Lesson';
+                            button.onclick = () => startLesson(index);
+                            levelElement.querySelector('.text-center').appendChild(button);
+                            break;
+                        case 'locked':
+                            iconWrapper.classList.add('bg-gray-700', 'border-gray-600');
+                            iconWrapper.innerHTML = lockIcon;
+                            break;
                     }
-                } else {
-                    clicked.classList.add('incorrect');
-                    selectedMatchTerm.classList.add('incorrect');
-                    const term = selectedMatchTerm;
-                    setTimeout(() => {
-                        clicked.classList.remove('incorrect');
-                        term.classList.remove('incorrect');
-                    }, 500);
-                    selectedMatchTerm = null;
-                    lives--;
-                    updateLives();
-                }
+                });
             }
-        }
 
-        function handleCheck() {
-            if (!selectedAnswer && quizData[currentQuestionIndex].type !== 'match') return;
-            const questionData = quizData[currentQuestionIndex];
-            let isCorrect = false;
-            let explanation = '';
-
-            switch(questionData.type) {
-                case 'multiple-choice':
-                    isCorrect = selectedAnswer.dataset.correct === 'true';
-                    explanation = selectedAnswer.dataset.explanation;
-                    break;
-                case 'match':
-                    isCorrect = true; // Button only enables on success
-                    explanation = "Great job matching all the pairs!";
-                    break;
-                case 'fill-in-the-blank':
-                    isCorrect = selectedAnswer === questionData.correctAnswer;
-                    explanation = isCorrect ? "That's the right answer!" : `The correct answer is "${questionData.correctAnswer}".`;
-                    break;
-            }
-            
-            showFeedback(isCorrect, explanation);
-            checkBtn.disabled = true;
-        }
-
-        function handleContinue() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < quizData.length) {
+            function startLesson(levelIndex) {
+                currentLevelIndex = levelIndex;
+                lessonStartTime = new Date();
+                mainView.classList.add('hidden');
+                lessonView.classList.remove('hidden');
+                lessonView.classList.add('flex');
                 loadQuestion(currentQuestionIndex);
-            } else {
-                progressBar.style.width = '100%';
-                showCompletionScreen();
             }
-        }
 
-        // --- UI & STATE MANAGEMENT ---
-        function showFeedback(isCorrect, text) {
-            if (isCorrect) {
-                score += 10;
-                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-green-500';
-                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-green-700';
-                feedbackTitle.innerText = "You are correct!";
-            } else {
-                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-red-500';
-                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-red-700';
-                feedbackTitle.innerText = "That's not right.";
-                if (quizData[currentQuestionIndex].type !== 'match') {
-                    lives--;
-                    updateLives();
+            function loadQuestion(index) {
+                resetQuestionState();
+                const quiz = levelData[currentLevelIndex].quiz;
+                const questionData = quiz[index];
+                questionTitle.innerText = questionData.question;
+                progressBar.style.width = `${(index / quiz.length) * 100}%`;
+
+                if (questionData.type === 'multiple-choice') {
+                    questionContent.innerHTML = `<div class="space-y-3"></div>`;
+                    const container = questionContent.querySelector('.space-y-3');
+                    questionData.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.className = 'option-btn w-full text-left p-4 bg-slate-800/50 border-2 border-gray-600 rounded-xl text-lg font-semibold';
+                        button.innerText = option.text;
+                        button.onclick = () => {
+                            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                            button.classList.add('selected');
+                            selectedAnswer = option;
+                            checkBtn.disabled = false;
+                        };
+                        container.appendChild(button);
+                    });
+                } else if (questionData.type === 'match') {
+                     const terms = questionData.pairs.map(p => p.term);
+                    const definitions = questionData.pairs.map(p => p.definition).sort(() => Math.random() - 0.5);
+                    questionContent.innerHTML = `<div class="flex justify-between gap-3"><div id="match-terms" class="flex-1 space-y-3"></div><div id="match-defs" class="flex-1 space-y-3"></div></div>`;
+                    const createMatchBtn = (text, type, matchId) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'match-item w-full p-3 bg-slate-800/50 border-2 border-gray-600 rounded-xl font-semibold';
+                        btn.innerText = text;
+                        btn.dataset.matchId = matchId;
+                        btn.dataset.type = type;
+                        btn.onclick = handleMatchClick;
+                        return btn;
+                    };
+                    terms.forEach(term => document.getElementById('match-terms').appendChild(createMatchBtn(term, 'term', term)));
+                    definitions.forEach(def => {
+                        const termForDef = questionData.pairs.find(p => p.definition === def).term;
+                        document.getElementById('match-defs').appendChild(createMatchBtn(def, 'def', termForDef));
+                    });
+                } else if (questionData.type === 'fill-in-the-blank') {
+                    questionContent.innerHTML = `<div class="text-center text-xl bg-slate-800/50 p-6 rounded-lg mb-8">${questionData.sentenceParts[0]}<span id="blank-space" class="blank-space"></span>${questionData.sentenceParts[1]}</div><div id="word-bank" class="flex justify-center gap-3 flex-wrap"></div>`;
+                    questionData.wordBank.forEach(word => {
+                        const button = document.createElement('button');
+                        button.className = 'word-bank-btn bg-slate-700 p-3 px-5 rounded-lg font-bold';
+                        button.innerText = word;
+                        button.onclick = () => {
+                            document.getElementById('blank-space').innerText = word;
+                            document.querySelectorAll('.word-bank-btn').forEach(b => b.classList.remove('selected'));
+                            button.classList.add('selected');
+                            selectedAnswer = word;
+                            checkBtn.disabled = false;
+                        };
+                        document.getElementById('word-bank').appendChild(button);
+                    });
                 }
             }
-            feedbackText.innerText = text;
-            feedbackFooter.classList.remove('hidden');
-        }
 
-        function showCompletionScreen() {
-            const lessonEndTime = new Date();
-            const timeTaken = Math.round((lessonEndTime - lessonStartTime) / 1000);
-            
-            totalXp += score;
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('final-xp').innerText = `+${score}`;
-            document.getElementById('final-time').innerText = `${timeTaken}s`;
-            xpMain.innerText = `${totalXp} XP`;
-
-            lessonView.classList.add('hidden');
-            lessonView.classList.remove('flex');
-            completionView.classList.remove('hidden');
-            completionView.classList.add('flex');
-        }
-
-        function closeLesson() {
-            completionView.classList.add('hidden');
-            completionView.classList.remove('flex');
-            mainView.classList.remove('hidden');
-            currentQuestionIndex = 0;
-            score = 0;
-            progressBar.style.width = '0%';
-        }
-
-        function resetQuestionState() {
-            selectedAnswer = null;
-            selectedMatchTerm = null;
-            matchedPairs = 0;
-            questionContent.innerHTML = '';
-            checkBtn.disabled = true;
-            feedbackFooter.classList.add('hidden');
-        }
-
-        function updateLives() {
-            livesMain.innerText = lives;
-            livesLesson.innerText = lives;
-            if (lives <= 0) {
-                console.error("You've run out of lives! Try again.");
-                closeLesson();
-                lives = 5;
-                updateLives();
+            function handleMatchClick(e) {
+                const clicked = e.target;
+                if (clicked.dataset.type === 'term') {
+                    document.querySelectorAll('.match-item[data-type="term"]').forEach(btn => btn.classList.remove('selected'));
+                    clicked.classList.add('selected');
+                    selectedMatchTerm = clicked;
+                } else if (clicked.dataset.type === 'def' && selectedMatchTerm) {
+                    if (clicked.dataset.matchId === selectedMatchTerm.dataset.matchId) {
+                        clicked.classList.add('correct');
+                        selectedMatchTerm.classList.add('correct');
+                        selectedMatchTerm = null;
+                        matchedPairs++;
+                        if (matchedPairs === levelData[currentLevelIndex].quiz[currentQuestionIndex].pairs.length) {
+                            checkBtn.disabled = false;
+                        }
+                    } else {
+                        clicked.classList.add('incorrect');
+                        const term = selectedMatchTerm;
+                        term.classList.add('incorrect');
+                        setTimeout(() => { clicked.classList.remove('incorrect'); term.classList.remove('incorrect'); }, 500);
+                        selectedMatchTerm = null;
+                        lives--; updateLives();
+                    }
+                }
             }
-        }
 
-        // --- INITIAL EVENT LISTENERS ---
-        startLessonBtn.addEventListener('click', () => {
-            lessonStartTime = new Date();
-            mainView.classList.add('hidden');
-            lessonView.classList.remove('hidden');
-            lessonView.classList.add('flex');
-            loadQuestion(currentQuestionIndex);
+            function handleCheck() {
+                const questionData = levelData[currentLevelIndex].quiz[currentQuestionIndex];
+                let isCorrect = false, explanation = '';
+                switch(questionData.type) {
+                    case 'multiple-choice': isCorrect = selectedAnswer.correct; explanation = selectedAnswer.explanation; break;
+                    case 'match': isCorrect = true; explanation = "Great job matching all the pairs!"; break;
+                    case 'fill-in-the-blank': isCorrect = selectedAnswer === questionData.correctAnswer; explanation = isCorrect ? "That's the right answer!" : `The correct answer is "${questionData.correctAnswer}".`; break;
+                }
+                showFeedback(isCorrect, explanation);
+                checkBtn.disabled = true;
+            }
+
+            function handleContinue() {
+                resetQuestionState();
+                currentQuestionIndex++;
+                const currentQuiz = levelData[currentLevelIndex].quiz;
+                if (currentQuestionIndex < currentQuiz.length) {
+                    loadQuestion(currentQuestionIndex);
+                } else {
+                    progressBar.style.width = '100%';
+                    showCompletionScreen();
+                }
+            }
+            
+            function showFeedback(isCorrect, text) {
+                if (isCorrect) {
+                    score += 10;
+                    feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-green-500';
+                    continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-green-700';
+                    feedbackTitle.innerText = "You are correct!";
+                } else {
+                    feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-red-500';
+                    continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-red-700';
+                    feedbackTitle.innerText = "That's not right.";
+                    if (levelData[currentLevelIndex].quiz[currentQuestionIndex].type !== 'match') { lives--; updateLives(); }
+                }
+                feedbackText.innerText = text;
+                feedbackFooter.classList.remove('hidden');
+            }
+
+            function showCompletionScreen() {
+                const timeTaken = Math.round((new Date() - lessonStartTime) / 1000);
+                totalXp += score;
+                document.getElementById('final-score').innerText = score;
+                document.getElementById('final-xp').innerText = `+${score}`;
+                document.getElementById('final-time').innerText = `${timeTaken}s`;
+                xpMain.innerText = `${totalXp} XP`;
+                lessonView.classList.add('hidden');
+                lessonView.classList.remove('flex');
+                completionView.classList.remove('hidden');
+                completionView.classList.add('flex');
+            }
+            
+            function finishLesson() {
+                levelData[currentLevelIndex].status = 'completed';
+                const nextLevelIndex = currentLevelIndex + 1;
+                if (nextLevelIndex < levelData.length) {
+                    levelData[nextLevelIndex].status = 'active';
+                } else {
+                    console.log("All levels completed!");
+                }
+                renderLevels();
+                closeLessonFlow();
+            }
+
+            function closeLessonFlow() {
+                completionView.classList.add('hidden');
+                completionView.classList.remove('flex');
+                lessonView.classList.add('hidden');
+                lessonView.classList.remove('flex');
+                mainView.classList.remove('hidden');
+                currentQuestionIndex = 0; score = 0;
+                progressBar.style.width = '0%';
+            }
+
+            function resetQuestionState() {
+                selectedAnswer = null; selectedMatchTerm = null; matchedPairs = 0;
+                questionContent.innerHTML = '';
+                checkBtn.disabled = true;
+                feedbackFooter.classList.add('hidden');
+            }
+
+            function updateLives() {
+                livesMain.innerText = lives; livesLesson.innerText = lives;
+                if (lives <= 0) { console.error("You've run out of lives!"); closeLessonFlow(); lives = 5; updateLives(); }
+            }
+            
+            closeLessonBtn.addEventListener('click', closeLessonFlow);
+            finishLessonBtn.addEventListener('click', finishLesson);
+            checkBtn.addEventListener('click', handleCheck);
+            continueBtn.addEventListener('click', handleContinue);
+
+            renderLevels();
         });
-        closeLessonBtn.addEventListener('click', closeLesson);
-        finishLessonBtn.addEventListener('click', closeLesson);
-        checkBtn.addEventListener('click', handleCheck);
-        continueBtn.addEventListener('click', handleContinue);
-
     </script>
 </body>
 </html>
