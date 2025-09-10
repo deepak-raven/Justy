@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constitution Quest</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -21,16 +21,7 @@
             box-shadow: 0 0 15px 5px rgba(255, 223, 0, 0.4), 0 0 20px 10px rgba(255, 223, 0, 0.2);
         }
         .path-glow {
-             filter: drop-shadow(0 0 5px rgba(192, 132, 252, 0.8));
-        }
-        .option-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .option-btn.selected {
-            background-color: #4a3a8a;
-            border-color: #a855f7;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+             filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.9));
         }
         .progress-bar-inner {
             transition: width 0.5s ease-in-out;
@@ -43,6 +34,66 @@
             50% { box-shadow: 0 0 30px 15px rgba(251, 191, 36, 0.5), 0 0 45px 30px rgba(251, 191, 36, 0.2); }
             100% { box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0.3), 0 0 30px 20px rgba(251, 191, 36, 0.1); }
         }
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* General option button style */
+        .option-btn { transition: all 0.2s ease-in-out; }
+        .option-btn.selected {
+            background-color: #4a3a8a;
+            border-color: #a855f7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Matching game styles */
+        .match-item {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .match-item.selected {
+            background-color: #4a3a8a;
+            border-color: #a855f7;
+            transform: scale(1.05);
+        }
+        .match-item.correct {
+            background-color: #22c55e;
+            border-color: #4ade80;
+            color: white;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .match-item.incorrect {
+            background-color: #ef4444;
+            border-color: #f87171;
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Fill in the blank styles */
+        .blank-space {
+            border-bottom: 2px dashed #6b7280;
+            padding: 0 1em;
+            display: inline-block;
+            min-width: 100px;
+            text-align: center;
+            font-weight: bold;
+            color: #d8b4fe;
+        }
+        .word-bank-btn {
+            transition: all 0.2s ease;
+        }
+        .word-bank-btn.selected {
+            background-color: #6d28d9;
+            color: white;
+            opacity: 0.5;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="text-white overflow-hidden">
@@ -52,45 +103,44 @@
         <div id="main-view" class="flex flex-col h-full bg-main">
             <!-- Header -->
             <header class="flex items-center justify-between p-4 z-10">
-                <div class="flex items-center gap-2">
-                    <img src="https://placehold.co/40x40/64748B/FFFFFF?text=A&font=inter" alt="Avatar" class="rounded-full border-2 border-purple-300">
+                <div class="flex items-center gap-3">
+                    <img src="https://placehold.co/44x44/c4b5fd/4c1d95?text=CQ&font=inter" alt="Avatar" class="rounded-full border-2 border-purple-300">
                     <span id="xp-main" class="font-bold text-lg">750 XP</span>
                 </div>
-                <div class="flex items-center gap-4">
-                     <div class="flex items-center gap-1 bg-red-500/80 px-2 py-1 rounded-lg">
+                <div class="flex items-center gap-3">
+                     <div class="flex items-center gap-2 bg-red-500/80 px-3 py-1 rounded-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FFC0CB" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                        <span id="lives-main" class="font-bold">5</span>
+                        <span id="lives-main" class="font-bold text-base">5</span>
                     </div>
-                     <div class="flex items-center gap-1 bg-purple-500/80 px-2 py-1 rounded-lg">
+                     <div class="flex items-center gap-2 bg-purple-500/80 px-3 py-1 rounded-xl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span class="font-bold">15</span>
+                        <span class="font-bold text-base">15</span>
                     </div>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
             </header>
-            <main class="flex-1 overflow-y-auto relative p-4" style="scrollbar-width: none; -ms-overflow-style: none;">
-                <div class="absolute bottom-1/4 left-[-20px] w-40 h-40 z-0">
+            <main class="flex-1 overflow-y-auto relative no-scrollbar">
+                <div class="absolute bottom-[-20px] left-[-30px] w-48 h-48 z-10">
                      <img src="images/11.png" alt="Lady Justice Character" class="w-full h-full object-contain">
                 </div>
-                <div class="absolute inset-0 flex justify-center items-center z-0">
+                <div class="absolute inset-x-0 top-0 h-full flex justify-center items-center z-0">
                     <svg width="200" height="600" viewBox="0 0 200 600" class="path-glow">
-                        <path d="M 100 550 C 150 500, 50 450, 100 400 S 150 300, 100 250 S 50 150, 100 100 S 150 0, 100 0" stroke="url(#gradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        <path d="M 100 580 C 180 530, 20 480, 100 430 S 180 330, 100 280 S 20 180, 100 130 S 180 30, 100 30" stroke="url(#gradient)" stroke-width="8" fill="none" stroke-linecap="round"/>
                          <defs><linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#e879f9;stop-opacity:1" /></linearGradient></defs>
                     </svg>
                 </div>
-                <div class="relative z-10 h-[700px]">
-                     <div class="absolute" style="top: 85%; left: 45%;"><div class="text-center"><div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center border-4 border-green-300 mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg></div><p class="font-bold text-sm">INTRODUCTION</p></div></div>
-                    <div class="absolute bg-gray-600 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-500" style="top: 70%; left: 15%;"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div>
-                    <div class="absolute" style="top: 45%; left: 40%;"><div class="text-center"><div class="bg-yellow-400 w-24 h-24 rounded-full flex items-center justify-center border-4 border-yellow-200 mb-3 glow"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 2a3.1 3.1 0 0 1 3.1 3.1v1.8a3.1 3.1 0 1 1-6.2 0V5.1A3.1 3.1 0 0 1 12 2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div><p class="font-bold text-lg">Freedom of Speech</p><button id="start-lesson-btn" class="mt-2 bg-white text-purple-700 font-bold py-2 px-6 rounded-xl shadow-lg uppercase tracking-wider text-sm">Start Lesson</button></div></div>
-                    <div class="absolute bg-gray-600 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-500" style="top: 28%; left: 15%;"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 12.5c0 .552-.448 1-1 1h-1c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h1c.552 0 1 .448 1 1v2z"/><path d="M14.5 12.5c0 .552.448 1 1 1h1c.552 0 1-.448 1-1v-2c0-.552-.448-1-1-1h-1c-.552 0-1 .448-1 1v2z"/><path d="M5.5 15.5h14c.552 0 1 .448 1 1v1c0 .552-.448 1-1 1h-14c-.552 0-1-.448-1-1v-1c0-.552.448-1 1-1zM4 9.5c0-.552.448-1 1-1h15c.552 0 1 .448 1 1v0c0 .552-.448 1-1 1h-15c-.552 0-1-.448-1-1v0z"/><path d="M2.5 4.5h20c.552 0 1 .448 1 1v0c0 .552-.448 1-1 1h-20c-.552 0-1-.448-1-1v0c0-.552.448-1 1-1z"/></g></svg></div>
-                    <div class="absolute" style="top: 10%; left: 45%;"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Right to Vote</p><div class="bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
+                <div class="relative z-20 h-[800px] w-full max-w-sm mx-auto">
+                     <div class="absolute" style="top: 92%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center border-4 border-green-300 mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg></div><p class="font-bold text-sm">INTRODUCTION</p></div></div>
+                     <div class="absolute" style="top: 70%; left: 15%;"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Article I</p><div class="bg-gray-700 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
+                    <div class="absolute" style="top: 45%; left: 50%; transform: translateX(-50%);"><div class="text-center"><div class="bg-yellow-400 w-24 h-24 rounded-full flex items-center justify-center border-4 border-yellow-200 mb-3 glow"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 2a3.1 3.1 0 0 1 3.1 3.1v1.8a3.1 3.1 0 1 1-6.2 0V5.1A3.1 3.1 0 0 1 12 2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div><p class="font-bold text-lg">Freedom of Speech</p><button id="start-lesson-btn" class="mt-2 bg-white text-purple-700 font-bold py-2 px-6 rounded-xl shadow-lg uppercase tracking-wider text-sm">Start Lesson</button></div></div>
+                    <div class="absolute" style="top: 20%; left: 85%; transform: translateX(-100%);"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Article II</p><div class="bg-gray-700 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
+                     <div class="absolute" style="top: 0%; left: 50%; transform: translateX(-50%);"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Right to Vote</p><div class="bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
                 </div>
             </main>
-            <footer class="grid grid-cols-4 gap-2 p-3 bg-slate-900/30 border-t border-purple-400/20 z-10">
-                <a href="#" class="flex flex-col items-center justify-center text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="text-xs mt-1">Home</span></a>
-                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg><span class="text-xs mt-1">Progress</span></a>
-                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><g><path d="m21.54 11.54-6.09-6.09"/><path d="m14.24 7.24 7.3 7.3"/><path d="m2.46 12.46 6.09 6.09"/><path d="m9.76 16.76-7.3-7.3"/><path d="m16.76 9.76 1.15-1.15a2 2 0 0 0 0-2.83l-1.42-1.42a2 2 0 0 0-2.83 0L12.51 5.51"/><path d="m7.24 14.24-1.15 1.15a2 2 0 0 0 0 2.83l1.42 1.42a2 2 0 0 0 2.83 0l1.15-1.15"/></g></svg><span class="text-xs mt-1">Challenges</span></a>
-                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="text-xs mt-1">Settings</span></a>
+            <footer class="grid grid-cols-4 gap-2 p-3 bg-slate-900/40 border-t border-purple-400/20 z-10">
+                <a href="#" class="flex flex-col items-center justify-center text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="text-xs mt-1">Home</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg><span class="text-xs mt-1">Progress</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g><path d="m21.54 11.54-6.09-6.09"/><path d="m14.24 7.24 7.3 7.3"/><path d="m2.46 12.46 6.09 6.09"/><path d="m9.76 16.76-7.3-7.3"/><path d="m16.76 9.76 1.15-1.15a2 2 0 0 0 0-2.83l-1.42-1.42a2 2 0 0 0-2.83 0L12.51 5.51"/><path d="m7.24 14.24-1.15 1.15a2 2 0 0 0 0 2.83l1.42 1.42a2 2 0 0 0 2.83 0l1.15-1.15"/></g></svg><span class="text-xs mt-1">Challenges</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="text-xs mt-1">Settings</span></a>
             </footer>
         </div>
 
@@ -100,14 +150,14 @@
                  <button id="close-lesson-btn"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                  <div class="w-full bg-gray-600 rounded-full h-4"><div id="progress-bar" class="bg-green-500 h-4 rounded-full progress-bar-inner" style="width: 0%"></div></div>
                  <div class="flex items-center gap-1">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FFC0CB" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FFC0CB" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
                      <span id="lives-lesson" class="font-bold text-red-400 text-lg">5</span>
                  </div>
             </header>
             <main class="flex-1 flex flex-col justify-between">
                 <div>
-                    <h1 id="question-title" class="text-2xl font-bold mb-8"></h1>
-                    <div id="options-container" class="space-y-3"></div>
+                    <h1 id="question-title" class="text-2xl font-bold mb-8 text-center"></h1>
+                    <div id="question-content"></div>
                 </div>
                 <div class="w-full">
                      <button id="check-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>Check</button>
@@ -126,104 +176,173 @@
         <!-- Completion View -->
         <div id="completion-view" class="hidden flex-col h-full bg-lesson p-8 text-center justify-center">
             <h1 class="text-4xl font-bold text-yellow-400 mb-4">Lesson Complete!</h1>
-            <div class="w-32 h-32 bg-yellow-500/20 rounded-full flex items-center justify-center mb-8 fire-glow">
+            <div class="w-32 h-32 bg-yellow-500/20 rounded-full flex items-center justify-center mb-8 fire-glow mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="orange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
             </div>
             <div class="flex justify-around w-full mb-12">
-                <div>
-                    <p class="text-3xl font-bold" id="final-score">0</p>
-                    <p class="text-gray-400 uppercase">Score</p>
-                </div>
-                <div>
-                    <p class="text-3xl font-bold text-green-400" id="final-xp">+0</p>
-                    <p class="text-gray-400 uppercase">XP Gained</p>
-                </div>
-                <div>
-                    <p class="text-3xl font-bold" id="final-time">0s</p>
-                    <p class="text-gray-400 uppercase">Time</p>
-                </div>
+                <div><p class="text-3xl font-bold" id="final-score">0</p><p class="text-gray-400 uppercase text-sm">Score</p></div>
+                <div><p class="text-3xl font-bold text-green-400" id="final-xp">+0</p><p class="text-gray-400 uppercase text-sm">XP Gained</p></div>
+                <div><p class="text-3xl font-bold" id="final-time">0s</p><p class="text-gray-400 uppercase text-sm">Time</p></div>
             </div>
             <button id="finish-lesson-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg">Continue</button>
         </div>
     </div>
 
     <script>
+        // --- DATA ---
         const quizData = [
-            { question: "Which of these is protected by 'Freedom of Speech'?", options: [{ text: "Shouting 'fire' in a crowded theater when there is no fire.", correct: false, explanation: "This is not protected as it can cause panic and harm." },{ text: "Writing an article criticizing a government policy.", correct: true, explanation: "Criticism of the government is a core aspect of protected speech." },{ text: "Making threats against another person.", correct: false, explanation: "Direct threats are not protected speech." }]},
-            { question: "Does 'Freedom of Speech' mean you can say anything without any consequences?", options: [{ text: "Yes, it's an absolute right.", correct: false, explanation: "The right is not absolute and has well-defined limits." },{ text: "No, there are limitations like defamation and incitement to violence.", correct: true, explanation: "The law balances freedom of speech with protection from harm." },{ text: "Only if you are a journalist.", correct: false, explanation: "This right applies to all citizens, not just journalists." }]},
-            { question: "What is the primary purpose of protecting speech?", options: [{ text: "To allow people to say offensive things.", correct: false, explanation: "While some offensive speech is protected, it's not the primary goal." },{ text: "To ensure a marketplace of ideas and hold power accountable.", correct: true, explanation: "This allows for open debate and discovery of truth." },{ text: "To protect commercial advertising.", correct: false, explanation: "Commercial speech has some protection, but it's not the primary purpose." }]}
+            { type: 'multiple-choice', question: "Which of these is protected by 'Freedom of Speech'?", options: [{ text: "Shouting 'fire' in a crowded theater when there is no fire.", correct: false, explanation: "This can cause panic and harm." },{ text: "Writing an article criticizing a government policy.", correct: true, explanation: "Criticism of government is a core protected speech." },{ text: "Making threats against another person.", correct: false, explanation: "Direct threats are not protected speech." }]},
+            { type: 'match', question: "Match the branch to its function.", pairs: [{ term: 'Legislative', definition: 'Makes laws' }, { term: 'Executive', definition: 'Enforces laws' }, { term: 'Judicial', definition: 'Interprets laws' }]},
+            { type: 'fill-in-the-blank', question: "Complete the sentence.", sentenceParts: ["The first ten amendments to the Constitution are called the ", "."], correctAnswer: "Bill of Rights", wordBank: ["Preamble", "Bill of Rights", "Declaration"]},
+            { type: 'multiple-choice', question: "Can you say anything without any consequences under 'Freedom of Speech'?", options: [{ text: "Yes, it's an absolute right.", correct: false, explanation: "The right is not absolute and has limits." },{ text: "No, there are limitations like defamation and incitement.", correct: true, explanation: "The law balances free speech with protection from harm." },{ text: "Only if you are a journalist.", correct: false, explanation: "This right applies to all citizens." }]}
         ];
 
-        const mainView = document.getElementById('main-view');
-        const lessonView = document.getElementById('lesson-view');
-        const completionView = document.getElementById('completion-view');
-        const startLessonBtn = document.getElementById('start-lesson-btn');
-        const closeLessonBtn = document.getElementById('close-lesson-btn');
-        const finishLessonBtn = document.getElementById('finish-lesson-btn');
-        const questionTitle = document.getElementById('question-title');
-        const optionsContainer = document.getElementById('options-container');
-        const checkBtn = document.getElementById('check-btn');
-        const feedbackFooter = document.getElementById('feedback-footer');
-        const feedbackContent = document.getElementById('feedback-content');
-        const feedbackTitle = document.getElementById('feedback-title');
-        const feedbackText = document.getElementById('feedback-text');
-        const continueBtn = document.getElementById('continue-btn');
-        const progressBar = document.getElementById('progress-bar');
-        const livesMain = document.getElementById('lives-main');
-        const livesLesson = document.getElementById('lives-lesson');
-        const xpMain = document.getElementById('xp-main');
+        // --- DOM ELEMENTS ---
+        const mainView = document.getElementById('main-view'), lessonView = document.getElementById('lesson-view'), completionView = document.getElementById('completion-view');
+        const startLessonBtn = document.getElementById('start-lesson-btn'), closeLessonBtn = document.getElementById('close-lesson-btn'), finishLessonBtn = document.getElementById('finish-lesson-btn');
+        const questionTitle = document.getElementById('question-title'), questionContent = document.getElementById('question-content'), checkBtn = document.getElementById('check-btn');
+        const feedbackFooter = document.getElementById('feedback-footer'), feedbackContent = document.getElementById('feedback-content'), feedbackTitle = document.getElementById('feedback-title'), feedbackText = document.getElementById('feedback-text'), continueBtn = document.getElementById('continue-btn');
+        const progressBar = document.getElementById('progress-bar'), livesMain = document.getElementById('lives-main'), livesLesson = document.getElementById('lives-lesson'), xpMain = document.getElementById('xp-main');
 
-        let currentQuestionIndex = 0;
-        let lives = 5;
-        let totalXp = 750;
-        let score = 0;
-        let lessonStartTime;
-        let selectedOption = null;
+        // --- STATE ---
+        let currentQuestionIndex = 0, lives = 5, totalXp = 750, score = 0, lessonStartTime;
+        let selectedAnswer = null, selectedMatchTerm = null, matchedPairs = 0;
 
+        // --- QUESTION LOADERS ---
         function loadQuestion(index) {
             resetQuestionState();
             const questionData = quizData[index];
             questionTitle.innerText = questionData.question;
-            optionsContainer.innerHTML = '';
-            questionData.options.forEach(option => {
+            const progressPercentage = (index / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            switch (questionData.type) {
+                case 'multiple-choice': loadMultipleChoice(questionData); break;
+                case 'match': loadMatch(questionData); break;
+                case 'fill-in-the-blank': loadFillInBlank(questionData); break;
+            }
+        }
+
+        function loadMultipleChoice(data) {
+            questionContent.innerHTML = `<div class="space-y-3"></div>`;
+            const container = questionContent.querySelector('.space-y-3');
+            data.options.forEach(option => {
                 const button = document.createElement('button');
                 button.className = 'option-btn w-full text-left p-4 bg-slate-800/50 border-2 border-gray-600 rounded-xl text-lg font-semibold';
                 button.innerText = option.text;
-                button.dataset.correct = option.correct;
-                button.dataset.explanation = option.explanation;
-                optionsContainer.appendChild(button);
+                button.onclick = () => {
+                    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedAnswer = button;
+                    checkBtn.disabled = false;
+                };
+                container.appendChild(button);
             });
-            const progressPercentage = (index / quizData.length) * 100;
-            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        function loadMatch(data) {
+            const terms = data.pairs.map(p => p.term);
+            const definitions = data.pairs.map(p => p.definition).sort(() => Math.random() - 0.5); // Shuffle definitions
+            questionContent.innerHTML = `
+                <div class="flex justify-between gap-3">
+                    <div id="match-terms" class="flex-1 space-y-3"></div>
+                    <div id="match-defs" class="flex-1 space-y-3"></div>
+                </div>`;
+            const termsContainer = document.getElementById('match-terms');
+            const defsContainer = document.getElementById('match-defs');
+
+            terms.forEach(term => termsContainer.appendChild(createMatchButton(term, 'term', term)));
+            definitions.forEach(def => {
+                const termForDef = data.pairs.find(p => p.definition === def).term;
+                defsContainer.appendChild(createMatchButton(def, 'def', termForDef));
+            });
         }
         
-        function handleOptionClick(e) {
-            const clickedOption = e.target.closest('.option-btn');
-            if (!clickedOption || !checkBtn.disabled) return;
-            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            clickedOption.classList.add('selected');
-            selectedOption = clickedOption;
-            checkBtn.disabled = false;
+        function createMatchButton(text, type, matchId) {
+            const button = document.createElement('button');
+            button.className = 'match-item w-full p-3 bg-slate-800/50 border-2 border-gray-600 rounded-xl font-semibold';
+            button.innerText = text;
+            button.dataset.matchId = matchId;
+            button.dataset.type = type;
+            button.onclick = handleMatchClick;
+            return button;
+        }
+
+        function loadFillInBlank(data) {
+            questionContent.innerHTML = `
+                <div class="text-center text-xl bg-slate-800/50 p-6 rounded-lg mb-8">
+                    ${data.sentenceParts[0]}<span id="blank-space" class="blank-space"></span>${data.sentenceParts[1]}
+                </div>
+                <div id="word-bank" class="flex justify-center gap-3 flex-wrap"></div>`;
+            const wordBankContainer = document.getElementById('word-bank');
+            data.wordBank.forEach(word => {
+                const button = document.createElement('button');
+                button.className = 'word-bank-btn bg-slate-700 p-3 px-5 rounded-lg font-bold';
+                button.innerText = word;
+                button.onclick = () => {
+                    document.getElementById('blank-space').innerText = word;
+                    document.querySelectorAll('.word-bank-btn').forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedAnswer = word;
+                    checkBtn.disabled = false;
+                };
+                wordBankContainer.appendChild(button);
+            });
+        }
+
+        // --- EVENT HANDLERS ---
+        function handleMatchClick(e) {
+            const clicked = e.target;
+            if (clicked.dataset.type === 'term') {
+                document.querySelectorAll('.match-item[data-type="term"]').forEach(btn => btn.classList.remove('selected'));
+                clicked.classList.add('selected');
+                selectedMatchTerm = clicked;
+            } else if (clicked.dataset.type === 'def' && selectedMatchTerm) {
+                if (clicked.dataset.matchId === selectedMatchTerm.dataset.matchId) {
+                    clicked.classList.add('correct');
+                    selectedMatchTerm.classList.add('correct');
+                    selectedMatchTerm = null;
+                    matchedPairs++;
+                    if (matchedPairs === quizData[currentQuestionIndex].pairs.length) {
+                        checkBtn.disabled = false;
+                    }
+                } else {
+                    clicked.classList.add('incorrect');
+                    selectedMatchTerm.classList.add('incorrect');
+                    const term = selectedMatchTerm;
+                    setTimeout(() => {
+                        clicked.classList.remove('incorrect');
+                        term.classList.remove('incorrect');
+                    }, 500);
+                    selectedMatchTerm = null;
+                    lives--;
+                    updateLives();
+                }
+            }
         }
 
         function handleCheck() {
-            if (!selectedOption) return;
-            const isCorrect = selectedOption.dataset.correct === 'true';
-            if (isCorrect) {
-                score += 10;
-                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-green-500';
-                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-green-700';
-                feedbackTitle.innerText = "You are correct!";
-                feedbackText.innerText = selectedOption.dataset.explanation;
-            } else {
-                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-red-500';
-                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-red-700';
-                feedbackTitle.innerText = "That's not right.";
-                feedbackText.innerText = selectedOption.dataset.explanation;
-                lives--;
-                updateLives();
+            if (!selectedAnswer && quizData[currentQuestionIndex].type !== 'match') return;
+            const questionData = quizData[currentQuestionIndex];
+            let isCorrect = false;
+            let explanation = '';
+
+            switch(questionData.type) {
+                case 'multiple-choice':
+                    isCorrect = selectedAnswer.dataset.correct === 'true';
+                    explanation = selectedAnswer.dataset.explanation;
+                    break;
+                case 'match':
+                    isCorrect = true; // Button only enables on success
+                    explanation = "Great job matching all the pairs!";
+                    break;
+                case 'fill-in-the-blank':
+                    isCorrect = selectedAnswer === questionData.correctAnswer;
+                    explanation = isCorrect ? "That's the right answer!" : `The correct answer is "${questionData.correctAnswer}".`;
+                    break;
             }
-            feedbackFooter.classList.remove('hidden');
+            
+            showFeedback(isCorrect, explanation);
             checkBtn.disabled = true;
         }
 
@@ -235,6 +354,26 @@
                 progressBar.style.width = '100%';
                 showCompletionScreen();
             }
+        }
+
+        // --- UI & STATE MANAGEMENT ---
+        function showFeedback(isCorrect, text) {
+            if (isCorrect) {
+                score += 10;
+                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-green-500';
+                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-green-700';
+                feedbackTitle.innerText = "You are correct!";
+            } else {
+                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-red-500';
+                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-red-700';
+                feedbackTitle.innerText = "That's not right.";
+                if (quizData[currentQuestionIndex].type !== 'match') {
+                    lives--;
+                    updateLives();
+                }
+            }
+            feedbackText.innerText = text;
+            feedbackFooter.classList.remove('hidden');
         }
 
         function showCompletionScreen() {
@@ -263,7 +402,10 @@
         }
 
         function resetQuestionState() {
-            selectedOption = null;
+            selectedAnswer = null;
+            selectedMatchTerm = null;
+            matchedPairs = 0;
+            questionContent.innerHTML = '';
             checkBtn.disabled = true;
             feedbackFooter.classList.add('hidden');
         }
@@ -272,13 +414,14 @@
             livesMain.innerText = lives;
             livesLesson.innerText = lives;
             if (lives <= 0) {
-                alert("You've run out of lives! Try again.");
+                console.error("You've run out of lives! Try again.");
                 closeLesson();
                 lives = 5;
                 updateLives();
             }
         }
 
+        // --- INITIAL EVENT LISTENERS ---
         startLessonBtn.addEventListener('click', () => {
             lessonStartTime = new Date();
             mainView.classList.add('hidden');
@@ -286,10 +429,8 @@
             lessonView.classList.add('flex');
             loadQuestion(currentQuestionIndex);
         });
-
         closeLessonBtn.addEventListener('click', closeLesson);
         finishLessonBtn.addEventListener('click', closeLesson);
-        optionsContainer.addEventListener('click', handleOptionClick);
         checkBtn.addEventListener('click', handleCheck);
         continueBtn.addEventListener('click', handleContinue);
 
