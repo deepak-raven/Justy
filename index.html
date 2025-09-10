@@ -5,407 +5,294 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constitution Quest</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #2A214D 0%, #1D1635 100%);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        /* --- Common Styles --- */
-        .xp-badge {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .bg-main {
+            background: radial-gradient(circle at top, #4a3a8a, #2a2154);
         }
-        .character-img {
-            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.4));
+        .bg-lesson {
+            background-color: #2a2154;
         }
-
-        /* --- Home View Styles --- */
-        .nav-item { transition: all 0.2s ease-in-out; }
-        .nav-item.active, .nav-item:hover { color: #A855F7; }
-        .path-svg {
-            position: absolute; top: 0; left: 50%;
-            transform: translateX(-50%); height: 100%;
-            width: auto; z-index: 1;
+        .glow {
+            box-shadow: 0 0 15px 5px rgba(255, 223, 0, 0.4), 0 0 20px 10px rgba(255, 223, 0, 0.2);
         }
-        .lesson-group {
-            position: absolute; z-index: 10; display: flex;
-            flex-direction: column; align-items: center;
-            transform: translateX(-50%);
+        .path-glow {
+             filter: drop-shadow(0 0 5px rgba(192, 132, 252, 0.8));
         }
-        .path-node {
-            display: flex; align-items: center; justify-content: center;
-            background-color: #3B305E; border: 2px solid #6D28D9;
-            border-radius: 50%; color: white; transition: all 0.3s ease;
-            width: 50px; height: 50px;
-        }
-        .path-node:hover { transform: scale(1.1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.7); }
-        .path-node.locked { background-color: #374151; border-color: #4B5563; color: #9CA3AF; }
-        .path-node.completed { background-color: #3B305E; border-color: #10B981; }
-        .current-lesson-node {
-            width: 90px; height: 90px; background: #FACC15;
-            border: 4px solid white; box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B;
-            animation: pulse 2s infinite;
-        }
-        .start-lesson-btn {
-            background: linear-gradient(90deg, #EC4899 0%, #D946EF 100%);
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B; }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px #FACC15, 0 0 60px #F59E0B; }
-            100% { transform: scale(0.95); box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B; }
-        }
-
-        /* --- Quiz View Styles --- */
-        .quiz-option {
-            background-color: #3B305E;
-            border: 2px solid #4c4177;
+        .option-btn {
             transition: all 0.2s ease-in-out;
         }
-        .quiz-option.selected {
-            border-color: #A855F7;
-            background-color: #4c3b8f;
+        .option-btn.selected {
+            background-color: #4a3a8a;
+            border-color: #a855f7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .quiz-option.correct {
-            border-color: #10B981;
-            background-color: #10B981;
-            color: white;
+        .progress-bar-inner {
+            transition: width 0.5s ease-in-out;
         }
-        .quiz-option.incorrect {
-            border-color: #EF4444;
-            background-color: #EF4444;
-            color: white;
+        .fire-glow {
+            animation: fire-pulse 2s infinite;
         }
-        .options-disabled .quiz-option { pointer-events: none; }
-
-        .check-btn { background: linear-gradient(90deg, #6D28D9 0%, #9333EA 100%); }
-        .check-btn.correct-answer { background: linear-gradient(90deg, #10B981 0%, #059669 100%); }
-        .check-btn.incorrect-answer { background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%); }
-        .feedback-popup { transition: opacity 0.3s ease, transform 0.3s ease; }
-
-        /* --- Win Screen Styles --- */
-        .streak-fire {
-            filter: drop-shadow(0 0 20px #F59E0B);
-            animation: fire-flicker 3s infinite linear;
-        }
-        @keyframes fire-flicker {
-            0%, 100% { transform: scale(1) rotate(-1deg); }
-            50% { transform: scale(1.05) rotate(1deg); }
-        }
-        .stat-box {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        @keyframes fire-pulse {
+            0% { box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0.3), 0 0 30px 20px rgba(251, 191, 36, 0.1); }
+            50% { box-shadow: 0 0 30px 15px rgba(251, 191, 36, 0.5), 0 0 45px 30px rgba(251, 191, 36, 0.2); }
+            100% { box-shadow: 0 0 20px 10px rgba(251, 191, 36, 0.3), 0 0 30px 20px rgba(251, 191, 36, 0.1); }
         }
     </style>
 </head>
-<body class="text-white">
-    <div id="app" class="max-w-md mx-auto h-screen flex flex-col overflow-hidden bg-cover bg-center" style="background-image: radial-gradient(circle at center, rgba(68, 54, 114, 0.5) 0%, transparent 70%);">
+<body class="text-white overflow-hidden">
+
+    <div id="app-container" class="h-screen w-screen max-w-sm mx-auto">
+        <!-- Main Menu View -->
+        <div id="main-view" class="flex flex-col h-full bg-main">
+            <!-- Header -->
+            <header class="flex items-center justify-between p-4 z-10">
+                <div class="flex items-center gap-2">
+                    <img src="https://placehold.co/40x40/64748B/FFFFFF?text=A&font=inter" alt="Avatar" class="rounded-full border-2 border-purple-300">
+                    <span id="xp-main" class="font-bold text-lg">750 XP</span>
+                </div>
+                <div class="flex items-center gap-4">
+                     <div class="flex items-center gap-1 bg-red-500/80 px-2 py-1 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FFC0CB" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                        <span id="lives-main" class="font-bold">5</span>
+                    </div>
+                     <div class="flex items-center gap-1 bg-purple-500/80 px-2 py-1 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span class="font-bold">15</span>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></svg>
+            </header>
+            <main class="flex-1 overflow-y-auto relative p-4" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="absolute bottom-1/4 left-[-20px] w-40 h-40 z-0">
+                     <img src="images/11.png" alt="Lady Justice Character" class="w-full h-full object-contain">
+                </div>
+                <div class="absolute inset-0 flex justify-center items-center z-0">
+                    <svg width="200" height="600" viewBox="0 0 200 600" class="path-glow">
+                        <path d="M 100 550 C 150 500, 50 450, 100 400 S 150 300, 100 250 S 50 150, 100 100 S 150 0, 100 0" stroke="url(#gradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                         <defs><linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" /><stop offset="100%" style="stop-color:#e879f9;stop-opacity:1" /></linearGradient></defs>
+                    </svg>
+                </div>
+                <div class="relative z-10 h-[700px]">
+                     <div class="absolute" style="top: 85%; left: 45%;"><div class="text-center"><div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center border-4 border-green-300 mb-2"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-white"><polyline points="20 6 9 17 4 12"></polyline></svg></div><p class="font-bold text-sm">INTRODUCTION</p></div></div>
+                    <div class="absolute bg-gray-600 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-500" style="top: 70%; left: 15%;"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></div>
+                    <div class="absolute" style="top: 45%; left: 40%;"><div class="text-center"><div class="bg-yellow-400 w-24 h-24 rounded-full flex items-center justify-center border-4 border-yellow-200 mb-3 glow"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-900"><path d="M12 2a3.1 3.1 0 0 1 3.1 3.1v1.8a3.1 3.1 0 1 1-6.2 0V5.1A3.1 3.1 0 0 1 12 2z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg></div><p class="font-bold text-lg">Freedom of Speech</p><button id="start-lesson-btn" class="mt-2 bg-white text-purple-700 font-bold py-2 px-6 rounded-xl shadow-lg uppercase tracking-wider text-sm">Start Lesson</button></div></div>
+                    <div class="absolute bg-gray-600 w-14 h-14 rounded-full flex items-center justify-center border-4 border-gray-500" style="top: 28%; left: 15%;"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 12.5c0 .552-.448 1-1 1h-1c-.552 0-1-.448-1-1v-2c0-.552.448-1 1-1h1c.552 0 1 .448 1 1v2z"/><path d="M14.5 12.5c0 .552.448 1 1 1h1c.552 0 1-.448 1-1v-2c0-.552-.448-1-1-1h-1c-.552 0-1 .448-1 1v2z"/><path d="M5.5 15.5h14c.552 0 1 .448 1 1v1c0 .552-.448 1-1 1h-14c-.552 0-1-.448-1-1v-1c0-.552.448-1 1-1zM4 9.5c0-.552.448-1 1-1h15c.552 0 1 .448 1 1v0c0 .552-.448 1-1 1h-15c-.552 0-1-.448-1-1v0z"/><path d="M2.5 4.5h20c.552 0 1 .448 1 1v0c0 .552-.448 1-1 1h-20c-.552 0-1-.448-1-1v0c0-.552.448-1 1-1z"/></g></svg></div>
+                    <div class="absolute" style="top: 10%; left: 45%;"><div class="text-center"><p class="font-bold text-sm text-gray-400 mb-2">Right to Vote</p><div class="bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center border-4 border-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div></div></div>
+                </div>
+            </main>
+            <footer class="grid grid-cols-4 gap-2 p-3 bg-slate-900/30 border-t border-purple-400/20 z-10">
+                <a href="#" class="flex flex-col items-center justify-center text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="text-xs mt-1">Home</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-2"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg><span class="text-xs mt-1">Progress</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-swords"><g><path d="m21.54 11.54-6.09-6.09"/><path d="m14.24 7.24 7.3 7.3"/><path d="m2.46 12.46 6.09 6.09"/><path d="m9.76 16.76-7.3-7.3"/><path d="m16.76 9.76 1.15-1.15a2 2 0 0 0 0-2.83l-1.42-1.42a2 2 0 0 0-2.83 0L12.51 5.51"/><path d="m7.24 14.24-1.15 1.15a2 2 0 0 0 0 2.83l1.42 1.42a2 2 0 0 0 2.83 0l1.15-1.15"/></g></svg><span class="text-xs mt-1">Challenges</span></a>
+                <a href="#" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="text-xs mt-1">Settings</span></a>
+            </footer>
+        </div>
+
+        <!-- Lesson View -->
+        <div id="lesson-view" class="hidden flex-col h-full bg-lesson p-5">
+            <header class="flex items-center gap-4 mb-6">
+                 <button id="close-lesson-btn"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                 <div class="w-full bg-gray-600 rounded-full h-4"><div id="progress-bar" class="bg-green-500 h-4 rounded-full progress-bar-inner" style="width: 0%"></div></div>
+                 <div class="flex items-center gap-1">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FFC0CB" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                     <span id="lives-lesson" class="font-bold text-red-400 text-lg">5</span>
+                 </div>
+            </header>
+            <main class="flex-1 flex flex-col justify-between">
+                <div>
+                    <h1 id="question-title" class="text-2xl font-bold mb-8"></h1>
+                    <div id="options-container" class="space-y-3"></div>
+                </div>
+                <div class="w-full">
+                     <button id="check-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>Check</button>
+                </div>
+            </main>
+        </div>
         
-        <!-- ======================= HOME VIEW ======================= -->
-        <div id="homeView" class="flex flex-col h-full">
-            <header class="flex items-center justify-between p-4 z-20 flex-shrink-0"><div class="flex items-center gap-2"><img src="https://placehold.co/40x40/7C3AED/FFFFFF?text=C" alt="User Avatar" class="rounded-full border-2 border-purple-400"><span class="font-bold text-lg">750 XP</span></div><div class="flex items-center gap-4"><div class="flex items-center gap-1 xp-badge px-3 py-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg><span class="font-semibold">230</span></div><div class="flex items-center gap-1 xp-badge px-3 py-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg><span class="font-semibold">15</span></div><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></div></header>
-            <main class="flex-grow overflow-y-auto relative min-h-0"><div class="relative w-full h-full min-h-[900px] py-8 px-4"><div class="absolute top-[28%] left-[5%] z-5"><img src="https://i.ibb.co/XzBPCqY/lady-justice-superhero.png" alt="Constitution Mascot" class="w-40 h-auto character-img"></div><svg viewBox="0 0 200 800" class="path-svg" style="filter: drop-shadow(0 0 10px #A855F7);"><path d="M 100,20 C 180,120 50,220 100,320 C 150,420 50,520 100,620 C 150,720 80,780 100,850" stroke="#A855F7" stroke-width="4" fill="none" stroke-linecap="round"></path></svg><div class="lesson-group" style="top: 2%; left: 50%;"><div class="path-node completed"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></div><span class="mt-2 text-xs font-bold uppercase">Introduction</span></div><div class="lesson-group" style="top: 18%; left: 75%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 11-2 0V4H6a1 1 0 11-2 0V4zm4 10.5a.5.5 0 00.5.5h3a.5.5 0 000-1h-3a.5.5 0 00-.5.5zM8.5 9a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zM8 6.5a.5.5 0 00.5.5h3a.5.5 0 000-1h-3a.5.5 0 00-.5.5z" clip-rule="evenodd"></path></svg></div></div><div class="lesson-group z-20" style="top: 35%; left: 50%;"><div class="path-node current-lesson-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-800" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"></path><path d="M5.5 10.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H6a.5.5 0 01-.5-.5z"></path><path d="M10 18a5 5 0 004.545-2.964A.5.5 0 0014 14.5h-1.554a.5.5 0 00-.446.276A3.998 3.998 0 0110 16a3.998 3.998 0 01-2.001-1.224A.5.5 0 007.554 14.5H6a.5.5 0 00-.545.536A5 5 0 0010 18z"></path></svg></div><h2 class="font-bold text-lg mt-3">Freedom of Speech</h2><button id="startLessonBtn" class="start-lesson-btn mt-2 px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider">Start Lesson</button></div><div class="lesson-group" style="top: 58%; left: 25%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div></div><div class="lesson-group" style="top: 75%; left: 50%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg></div></div><div class="lesson-group" style="top: 90%; left: 70%;"><div class="path-node locked"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div><span class="mt-2 text-xs font-bold uppercase text-gray-400 text-center">Right to Vote</span></div></div></main>
-            <footer class="flex justify-around items-center p-3 bg-[#1D1635] border-t border-purple-800 z-20 flex-shrink-0"><a href="#" class="nav-item active flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span class="text-xs">Home</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg><span class="text-xs">Progress</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="text-xs">Challenges</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-xs">Settings</span></a></footer>
-        </div>
-
-        <!-- ======================= QUIZ VIEW ======================= -->
-        <div id="quizView" class="hidden flex-col h-full p-4">
-            <header class="flex items-center gap-4 flex-shrink-0"><button id="closeQuizBtn" class="text-gray-400 hover:text-white transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button><div class="w-full bg-gray-700 rounded-full h-3.5"><div id="progressBar" class="bg-purple-500 h-3.5 rounded-full transition-all duration-300" style="width: 0%"></div></div></header>
-            <main class="flex-grow flex flex-col justify-between pt-8 pb-4 min-h-0"><div class="flex-shrink-0"><h1 id="quizQuestion" class="text-2xl md:text-3xl font-bold text-center mb-8"></h1><div id="quizOptions" class="space-y-4"></div></div><div class="flex-grow"></div><div class="flex-shrink-0"><div id="feedbackPopup" class="feedback-popup hidden opacity-0 transform translate-y-4 items-center justify-center flex-col text-center mb-6"><img src="https://i.ibb.co/L5kWMjf/lady-justice-superhero-happy.png" alt="Happy Mascot" class="w-40 h-auto character-img"><p id="feedbackText" class="text-xl font-bold mt-2"></p></div><button id="checkBtn" disabled class="w-full p-4 rounded-xl font-bold uppercase tracking-wider text-lg check-btn disabled:opacity-50 disabled:cursor-not-allowed">Check</button></div></main>
-        </div>
-
-        <!-- ======================= WIN VIEW ======================= -->
-        <div id="winView" class="hidden flex-col h-full p-6 justify-center items-center text-center">
-            <h1 class="text-4xl font-bold mb-4">Lesson Complete!</h1>
-            <svg class="w-32 h-32 streak-fire" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.26333 3.32031C8.65634 2.45219 9.872 1.98394 10.6695 2.61536C12.4485 4.0294 12.7667 6.64333 11.2465 8.45523C9.7263 10.2671 7.05634 10.6232 5.27734 9.20915C3.49833 7.7951 3.17933 5.18118 4.70033 3.36928C5.23233 2.76815 6.06646 2.74315 6.62633 3.23031" stroke="url(#paint0_linear_105_2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.4395 12.3899C17.9275 11.4558 19.1415 11.0256 19.9215 11.6669C21.6575 13.1119 21.9215 15.7268 20.3835 17.5187C18.8455 19.3106 16.2075 19.6056 14.4715 18.1606C12.7355 16.7156 12.4715 14.1007 14.0095 12.3088C14.4995 11.7287 15.3595 11.7516 15.8675 12.2729" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12.9841 8.23047C13.2575 7.15678 14.6135 6.60261 15.4241 7.28347C17.2515 8.80547 17.1655 11.6035 15.2225 13.0485C13.2795 14.4935 10.5185 14.0735 8.94908 12.3085C7.37908 10.5425 7.82808 7.82247 9.77108 6.37747C10.3705 5.92547 11.2295 6.10347 11.6535 6.71147" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><defs><linearGradient id="paint0_linear_105_2" x1="7.97033" y1="2.46331" x2="8.38459" y2="10.8872" gradientUnits="userSpaceOnUse"><stop stop-color="#FBBF24"></stop><stop offset="1" stop-color="#F59E0B"></stop></linearGradient></defs></svg>
-            <div class="grid grid-cols-3 gap-4 w-full my-8">
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">SCORE</p><p id="finalScore" class="text-2xl font-bold"></p></div>
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">XP GAINED</p><p id="xpGained" class="text-2xl font-bold"></p></div>
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">TIME</p><p id="timeTaken" class="text-2xl font-bold"></p></div>
+        <!-- Feedback Footer -->
+        <div id="feedback-footer" class="hidden absolute bottom-0 left-0 right-0 max-w-sm mx-auto p-5">
+            <div id="feedback-content" class="flex items-center justify-between p-4 rounded-xl">
+                 <div><h3 id="feedback-title" class="font-bold text-xl"></h3><p id="feedback-text"></p></div>
+                 <button id="continue-btn" class="text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider">Continue</button>
             </div>
-            <button id="doneBtn" class="w-full p-4 rounded-xl font-bold uppercase tracking-wider text-lg check-btn">Done</button>
+        </div>
+
+        <!-- Completion View -->
+        <div id="completion-view" class="hidden flex-col h-full bg-lesson p-8 text-center justify-center">
+            <h1 class="text-4xl font-bold text-yellow-400 mb-4">Lesson Complete!</h1>
+            <div class="w-32 h-32 bg-yellow-500/20 rounded-full flex items-center justify-center mb-8 fire-glow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="orange" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+            </div>
+            <div class="flex justify-around w-full mb-12">
+                <div>
+                    <p class="text-3xl font-bold" id="final-score">0</p>
+                    <p class="text-gray-400 uppercase">Score</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-green-400" id="final-xp">+0</p>
+                    <p class="text-gray-400 uppercase">XP Gained</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold" id="final-time">0s</p>
+                    <p class="text-gray-400 uppercase">Time</p>
+                </div>
+            </div>
+            <button id="finish-lesson-btn" class="w-full bg-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg uppercase tracking-wider text-lg">Continue</button>
         </div>
     </div>
 
     <script>
-        // --- QUIZ DATA ---
         const quizData = [
-            { question: "Which amendment protects freedom of speech?", options: ["First Amendment", "Second Amendment", "Fourth Amendment", "Tenth Amendment"], correctAnswer: 0 },
-            { question: "Freedom of speech protects which of the following?", options: ["Symbolic acts (e.g. flag burning)", "The right *not* to speak", "Expressing unpopular opinions", "All of the above"], correctAnswer: 3 },
-            { question: "Which of these is generally NOT protected speech?", options: ["Satire and parody", "Inciting violence against others", "Criticism of the government", "Artistic expression"], correctAnswer: 1 },
-            { question: "What is the term for *written* defamation of character?", options: ["Slander", "Sedition", "Libel", "Blasphemy"], correctAnswer: 2 },
-            { question: "Can the government limit speech in public schools?", options: ["No, speech is always absolute", "Only for teachers, not students", "Yes, if it disrupts the educational environment", "Yes, but only for political speech"], correctAnswer: 2 }
+            { question: "Which of these is protected by 'Freedom of Speech'?", options: [{ text: "Shouting 'fire' in a crowded theater when there is no fire.", correct: false, explanation: "This is not protected as it can cause panic and harm." },{ text: "Writing an article criticizing a government policy.", correct: true, explanation: "Criticism of the government is a core aspect of protected speech." },{ text: "Making threats against another person.", correct: false, explanation: "Direct threats are not protected speech." }]},
+            { question: "Does 'Freedom of Speech' mean you can say anything without any consequences?", options: [{ text: "Yes, it's an absolute right.", correct: false, explanation: "The right is not absolute and has well-defined limits." },{ text: "No, there are limitations like defamation and incitement to violence.", correct: true, explanation: "The law balances freedom of speech with protection from harm." },{ text: "Only if you are a journalist.", correct: false, explanation: "This right applies to all citizens, not just journalists." }]},
+            { question: "What is the primary purpose of protecting speech?", options: [{ text: "To allow people to say offensive things.", correct: false, explanation: "While some offensive speech is protected, it's not the primary goal." },{ text: "To ensure a marketplace of ideas and hold power accountable.", correct: true, explanation: "This allows for open debate and discovery of truth." },{ text: "To protect commercial advertising.", correct: false, explanation: "Commercial speech has some protection, but it's not the primary purpose." }]}
         ];
 
-        // --- VIEWS ---
-        const homeView = document.getElementById('homeView');
-        const quizView = document.getElementById('quizView');
-        const winView = document.getElementById('winView');
+        const mainView = document.getElementById('main-view');
+        const lessonView = document.getElementById('lesson-view');
+        const completionView = document.getElementById('completion-view');
+        const startLessonBtn = document.getElementById('start-lesson-btn');
+        const closeLessonBtn = document.getElementById('close-lesson-btn');
+        const finishLessonBtn = document.getElementById('finish-lesson-btn');
+        const questionTitle = document.getElementById('question-title');
+        const optionsContainer = document.getElementById('options-container');
+        const checkBtn = document.getElementById('check-btn');
+        const feedbackFooter = document.getElementById('feedback-footer');
+        const feedbackContent = document.getElementById('feedback-content');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackText = document.getElementById('feedback-text');
+        const continueBtn = document.getElementById('continue-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const livesMain = document.getElementById('lives-main');
+        const livesLesson = document.getElementById('lives-lesson');
+        const xpMain = document.getElementById('xp-main');
 
-        // --- ELEMENTS ---
-        const startLessonBtn = document.getElementById('startLessonBtn');
-        const closeQuizBtn = document.getElementById('closeQuizBtn');
-        const doneBtn = document.getElementById('doneBtn');
-        
-        const progressBar = document.getElementById('progressBar');
-        const quizQuestion = document.getElementById('quizQuestion');
-        const quizOptionsContainer = document.getElementById('quizOptions');
-        const checkBtn = document.getElementById('checkBtn');
-        const feedbackPopup = document.getElementById('feedbackPopup');
-        const feedbackText = document.getElementById('feedbackText');
-
-        const finalScoreEl = document.getElementById('finalScore');
-        const xpGainedEl = document.getElementById('xpGained');
-        const timeTakenEl = document.getElementById('timeTaken');
-
-        // --- STATE ---
         let currentQuestionIndex = 0;
+        let lives = 5;
+        let totalXp = 750;
         let score = 0;
+        let lessonStartTime;
         let selectedOption = null;
-        let answerChecked = false;
-        let startTime, timerInterval;
-
-        // --- FUNCTIONS ---
-        function startLesson() {
-            homeView.classList.add('hidden');
-            quizView.classList.remove('hidden');
-            quizView.classList.add('flex');
-            currentQuestionIndex = 0;
-            score = 0;
-            loadQuestion(currentQuestionIndex);
-            startTimer();
-        }
-
-        function endLesson() {
-            quizView.classList.add('hidden');
-            quizView.classList.remove('flex');
-            winView.classList.add('hidden');
-            winView.classList.remove('flex');
-            homeView.classList.remove('hidden');
-            stopTimer();
-        }
-        
-        function showWinScreen() {
-            stopTimer();
-            const timeElapsed = Math.floor((new Date() - startTime) / 1000);
-            const minutes = Math.floor(timeElapsed / 60);
-            const seconds = timeElapsed % 60;
-
-            finalScoreEl.textContent = score;
-            xpGainedEl.textContent = `+${score / 10}`;
-            timeTakenEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-            quizView.classList.add('hidden');
-            quizView.classList.remove('flex');
-            winView.classList.remove('hidden');
-            winView.classList.add('flex');
-        }
-
-        function startTimer() {
-            startTime = new Date();
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
 
         function loadQuestion(index) {
             resetQuestionState();
-            const question = quizData[index];
-            quizQuestion.textContent = question.question;
-            quizOptionsContainer.innerHTML = '';
+            const questionData = quizData[index];
+            questionTitle.innerText = questionData.question;
+            optionsContainer.innerHTML = '';
+            questionData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full text-left p-4 bg-slate-800/50 border-2 border-gray-600 rounded-xl text-lg font-semibold';
+                button.innerText = option.text;
+                button.dataset.correct = option.correct;
+                button.dataset.explanation = option.explanation;
+                optionsContainer.appendChild(button);
+            });
+            const progressPercentage = (index / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        function handleOptionClick(e) {
+            const clickedOption = e.target.closest('.option-btn');
+            if (!clickedOption || !checkBtn.disabled) return;
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            clickedOption.classList.add('selected');
+            selectedOption = clickedOption;
+            checkBtn.disabled = false;
+        }
+
+        function handleCheck() {
+            if (!selectedOption) return;
+            const isCorrect = selectedOption.dataset.correct === 'true';
+            if (isCorrect) {
+                score += 10;
+                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-green-500';
+                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-green-700';
+                feedbackTitle.innerText = "You are correct!";
+                feedbackText.innerText = selectedOption.dataset.explanation;
+            } else {
+                feedbackContent.className = 'flex items-center justify-between p-4 rounded-xl bg-red-500';
+                continueBtn.className = 'text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider bg-red-700';
+                feedbackTitle.innerText = "That's not right.";
+                feedbackText.innerText = selectedOption.dataset.explanation;
+                lives--;
+                updateLives();
+            }
+            feedbackFooter.classList.remove('hidden');
+            checkBtn.disabled = true;
+        }
+
+        function handleContinue() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                progressBar.style.width = '100%';
+                showCompletionScreen();
+            }
+        }
+
+        function showCompletionScreen() {
+            const lessonEndTime = new Date();
+            const timeTaken = Math.round((lessonEndTime - lessonStartTime) / 1000);
             
-            question.options.forEach((optionText, i) => {
-                const optionElement = document.createElement('button');
-                optionElement.className = 'quiz-option w-full text-left p            transform: translateX(-50%);
-        }
-        .path-node {
-            display: flex; align-items: center; justify-content: center;
-            background-color: #3B305E; border: 2px solid #6D28D9;
-            border-radius: 50%; color: white; transition: all 0.3s ease;
-            width: 50px; height: 50px;
-        }
-        .path-node:hover { transform: scale(1.1); box-shadow: 0 0 15px rgba(168, 85, 247, 0.7); }
-        .path-node.locked { background-color: #374151; border-color: #4B5563; color: #9CA3AF; }
-        .path-node.completed { background-color: #3B305E; border-color: #10B981; }
-        .current-lesson-node {
-            width: 90px; height: 90px; background: #FACC15;
-            border: 4px solid white; box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B;
-            animation: pulse 2s infinite;
-        }
-        .start-lesson-btn {
-            background: linear-gradient(90deg, #EC4899 0%, #D946EF 100%);
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B; }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px #FACC15, 0 0 60px #F59E0B; }
-            100% { transform: scale(0.95); box-shadow: 0 0 20px #FACC15, 0 0 40px #F59E0B; }
+            totalXp += score;
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-xp').innerText = `+${score}`;
+            document.getElementById('final-time').innerText = `${timeTaken}s`;
+            xpMain.innerText = `${totalXp} XP`;
+
+            lessonView.classList.add('hidden');
+            lessonView.classList.remove('flex');
+            completionView.classList.remove('hidden');
+            completionView.classList.add('flex');
         }
 
-        /* --- Quiz View Styles --- */
-        .quiz-option {
-            background-color: #3B305E;
-            border: 2px solid #4c4177;
-            transition: all 0.2s ease-in-out;
-        }
-        .quiz-option.selected {
-            border-color: #A855F7;
-            background-color: #4c3b8f;
-        }
-        .quiz-option.correct {
-            border-color: #10B981;
-            background-color: #10B981;
-            color: white;
-        }
-        .quiz-option.incorrect {
-            border-color: #EF4444;
-            background-color: #EF4444;
-            color: white;
-        }
-        .options-disabled .quiz-option { pointer-events: none; }
-
-        .check-btn { background: linear-gradient(90deg, #6D28D9 0%, #9333EA 100%); }
-        .check-btn.correct-answer { background: linear-gradient(90deg, #10B981 0%, #059669 100%); }
-        .check-btn.incorrect-answer { background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%); }
-        .feedback-popup { transition: opacity 0.3s ease, transform 0.3s ease; }
-
-        /* --- Win Screen Styles --- */
-        .streak-fire {
-            filter: drop-shadow(0 0 20px #F59E0B);
-            animation: fire-flicker 3s infinite linear;
-        }
-        @keyframes fire-flicker {
-            0%, 100% { transform: scale(1) rotate(-1deg); }
-            50% { transform: scale(1.05) rotate(1deg); }
-        }
-        .stat-box {
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
-</head>
-<body class="text-white">
-    <div id="app" class="max-w-md mx-auto h-screen flex flex-col overflow-hidden bg-cover bg-center" style="background-image: radial-gradient(circle at center, rgba(68, 54, 114, 0.5) 0%, transparent 70%);">
-        
-        <!-- ======================= HOME VIEW ======================= -->
-        <div id="homeView" class="flex flex-col h-full">
-            <header class="flex items-center justify-between p-4 z-20 flex-shrink-0"><div class="flex items-center gap-2"><img src="https://placehold.co/40x40/7C3AED/FFFFFF?text=C" alt="User Avatar" class="rounded-full border-2 border-purple-400"><span class="font-bold text-lg">750 XP</span></div><div class="flex items-center gap-4"><div class="flex items-center gap-1 xp-badge px-3 py-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg><span class="font-semibold">230</span></div><div class="flex items-center gap-1 xp-badge px-3 py-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg><span class="font-semibold">15</span></div><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg></div></header>
-            <main class="flex-grow overflow-y-auto relative min-h-0"><div class="relative w-full h-full min-h-[900px] py-8 px-4"><div class="absolute top-[28%] left-[5%] z-5"><img src="11.png" alt="Constitution Mascot" class="w-40 h-auto character-img"></div><svg viewBox="0 0 200 800" class="path-svg" style="filter: drop-shadow(0 0 10px #A855F7);"><path d="M 100,20 C 180,120 50,220 100,320 C 150,420 50,520 100,620 C 150,720 80,780 100,850" stroke="#A855F7" stroke-width="4" fill="none" stroke-linecap="round"></path></svg><div class="lesson-group" style="top: 2%; left: 50%;"><div class="path-node completed"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></div><span class="mt-2 text-xs font-bold uppercase">Introduction</span></div><div class="lesson-group" style="top: 18%; left: 75%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 11-2 0V4H6a1 1 0 11-2 0V4zm4 10.5a.5.5 0 00.5.5h3a.5.5 0 000-1h-3a.5.5 0 00-.5.5zM8.5 9a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zM8 6.5a.5.5 0 00.5.5h3a.5.5 0 000-1h-3a.5.5 0 00-.5.5z" clip-rule="evenodd"></path></svg></div></div><div class="lesson-group z-20" style="top: 35%; left: 50%;"><div class="path-node current-lesson-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-800" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z"></path><path d="M5.5 10.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H6a.5.5 0 01-.5-.5z"></path><path d="M10 18a5 5 0 004.545-2.964A.5.5 0 0014 14.5h-1.554a.5.5 0 00-.446.276A3.998 3.998 0 0110 16a3.998 3.998 0 01-2.001-1.224A.5.5 0 007.554 14.5H6a.5.5 0 00-.545.536A5 5 0 0010 18z"></path></svg></div><h2 class="font-bold text-lg mt-3">Freedom of Speech</h2><button id="startLessonBtn" class="start-lesson-btn mt-2 px-6 py-2 rounded-full font-semibold text-sm uppercase tracking-wider">Start Lesson</button></div><div class="lesson-group" style="top: 58%; left: 25%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div></div><div class="lesson-group" style="top: 75%; left: 50%;"><div class="path-node"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg></div></div><div class="lesson-group" style="top: 90%; left: 70%;"><div class="path-node locked"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div><span class="mt-2 text-xs font-bold uppercase text-gray-400 text-center">Right to Vote</span></div></div></main>
-            <footer class="flex justify-around items-center p-3 bg-[#1D1635] border-t border-purple-800 z-20 flex-shrink-0"><a href="#" class="nav-item active flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span class="text-xs">Home</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg><span class="text-xs">Progress</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><span class="text-xs">Challenges</span></a><a href="#" class="nav-item flex flex-col items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-xs">Settings</span></a></footer>
-        </div>
-
-        <!-- ======================= QUIZ VIEW ======================= -->
-        <div id="quizView" class="hidden flex-col h-full p-4">
-            <header class="flex items-center gap-4 flex-shrink-0"><button id="closeQuizBtn" class="text-gray-400 hover:text-white transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button><div class="w-full bg-gray-700 rounded-full h-3.5"><div id="progressBar" class="bg-purple-500 h-3.5 rounded-full transition-all duration-300" style="width: 0%"></div></div></header>
-            <main class="flex-grow flex flex-col justify-between pt-8 pb-4 min-h-0"><div class="flex-shrink-0"><h1 id="quizQuestion" class="text-2xl md:text-3xl font-bold text-center mb-8"></h1><div id="quizOptions" class="space-y-4"></div></div><div class="flex-grow"></div><div class="flex-shrink-0"><div id="feedbackPopup" class="feedback-popup hidden opacity-0 transform translate-y-4 items-center justify-center flex-col text-center mb-6"><img src="22.png" alt="Happy Mascot" class="w-40 h-auto character-img"><p id="feedbackText" class="text-xl font-bold mt-2"></p></div><button id="checkBtn" disabled class="w-full p-4 rounded-xl font-bold uppercase tracking-wider text-lg check-btn disabled:opacity-50 disabled:cursor-not-allowed">Check</button></div></main>
-        </div>
-
-        <!-- ======================= WIN VIEW ======================= -->
-        <div id="winView" class="hidden flex-col h-full p-6 justify-center items-center text-center">
-            <h1 class="text-4xl font-bold mb-4">Lesson Complete!</h1>
-            <svg class="w-32 h-32 streak-fire" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.26333 3.32031C8.65634 2.45219 9.872 1.98394 10.6695 2.61536C12.4485 4.0294 12.7667 6.64333 11.2465 8.45523C9.7263 10.2671 7.05634 10.6232 5.27734 9.20915C3.49833 7.7951 3.17933 5.18118 4.70033 3.36928C5.23233 2.76815 6.06646 2.74315 6.62633 3.23031" stroke="url(#paint0_linear_105_2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.4395 12.3899C17.9275 11.4558 19.1415 11.0256 19.9215 11.6669C21.6575 13.1119 21.9215 15.7268 20.3835 17.5187C18.8455 19.3106 16.2075 19.6056 14.4715 18.1606C12.7355 16.7156 12.4715 14.1007 14.0095 12.3088C14.4995 11.7287 15.3595 11.7516 15.8675 12.2729" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12.9841 8.23047C13.2575 7.15678 14.6135 6.60261 15.4241 7.28347C17.2515 8.80547 17.1655 11.6035 15.2225 13.0485C13.2795 14.4935 10.5185 14.0735 8.94908 12.3085C7.37908 10.5425 7.82808 7.82247 9.77108 6.37747C10.3705 5.92547 11.2295 6.10347 11.6535 6.71147" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><defs><linearGradient id="paint0_linear_105_2" x1="7.97033" y1="2.46331" x2="8.38459" y2="10.8872" gradientUnits="userSpaceOnUse"><stop stop-color="#FBBF24"></stop><stop offset="1" stop-color="#F59E0B"></stop></linearGradient></defs></svg>
-            <div class="grid grid-cols-3 gap-4 w-full my-8">
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">SCORE</p><p id="finalScore" class="text-2xl font-bold"></p></div>
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">XP GAINED</p><p id="xpGained" class="text-2xl font-bold"></p></div>
-                <div class="stat-box rounded-lg p-4"><p class="text-sm text-gray-400">TIME</p><p id="timeTaken" class="text-2xl font-bold"></p></div>
-            </div>
-            <button id="doneBtn" class="w-full p-4 rounded-xl font-bold uppercase tracking-wider text-lg check-btn">Done</button>
-        </div>
-    </div>
-
-    <script>
-        // --- QUIZ DATA ---
-        const quizData = [
-            { question: "Which amendment protects freedom of speech?", options: ["First Amendment", "Second Amendment", "Fourth Amendment", "Tenth Amendment"], correctAnswer: 0 },
-            { question: "Freedom of speech protects which of the following?", options: ["Symbolic acts (e.g. flag burning)", "The right *not* to speak", "Expressing unpopular opinions", "All of the above"], correctAnswer: 3 },
-            { question: "Which of these is generally NOT protected speech?", options: ["Satire and parody", "Inciting violence against others", "Criticism of the government", "Artistic expression"], correctAnswer: 1 },
-            { question: "What is the term for *written* defamation of character?", options: ["Slander", "Sedition", "Libel", "Blasphemy"], correctAnswer: 2 },
-            { question: "Can the government limit speech in public schools?", options: ["No, speech is always absolute", "Only for teachers, not students", "Yes, if it disrupts the educational environment", "Yes, but only for political speech"], correctAnswer: 2 }
-        ];
-
-        // --- VIEWS ---
-        const homeView = document.getElementById('homeView');
-        const quizView = document.getElementById('quizView');
-        const winView = document.getElementById('winView');
-
-        // --- ELEMENTS ---
-        const startLessonBtn = document.getElementById('startLessonBtn');
-        const closeQuizBtn = document.getElementById('closeQuizBtn');
-        const doneBtn = document.getElementById('doneBtn');
-        
-        const progressBar = document.getElementById('progressBar');
-        const quizQuestion = document.getElementById('quizQuestion');
-        const quizOptionsContainer = document.getElementById('quizOptions');
-        const checkBtn = document.getElementById('checkBtn');
-        const feedbackPopup = document.getElementById('feedbackPopup');
-        const feedbackText = document.getElementById('feedbackText');
-
-        const finalScoreEl = document.getElementById('finalScore');
-        const xpGainedEl = document.getElementById('xpGained');
-        const timeTakenEl = document.getElementById('timeTaken');
-
-        // --- STATE ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let selectedOption = null;
-        let answerChecked = false;
-        let startTime, timerInterval;
-
-        // --- FUNCTIONS ---
-        function startLesson() {
-            homeView.classList.add('hidden');
-            quizView.classList.remove('hidden');
-            quizView.classList.add('flex');
+        function closeLesson() {
+            completionView.classList.add('hidden');
+            completionView.classList.remove('flex');
+            mainView.classList.remove('hidden');
             currentQuestionIndex = 0;
             score = 0;
+            progressBar.style.width = '0%';
+        }
+
+        function resetQuestionState() {
+            selectedOption = null;
+            checkBtn.disabled = true;
+            feedbackFooter.classList.add('hidden');
+        }
+
+        function updateLives() {
+            livesMain.innerText = lives;
+            livesLesson.innerText = lives;
+            if (lives <= 0) {
+                alert("You've run out of lives! Try again.");
+                closeLesson();
+                lives = 5;
+                updateLives();
+            }
+        }
+
+        startLessonBtn.addEventListener('click', () => {
+            lessonStartTime = new Date();
+            mainView.classList.add('hidden');
+            lessonView.classList.remove('hidden');
+            lessonView.classList.add('flex');
             loadQuestion(currentQuestionIndex);
-            startTimer();
-        }
+        });
 
-        function endLesson() {
-            quizView.classList.add('hidden');
-            quizView.classList.remove('flex');
-            winView.classList.add('hidden');
-            winView.classList.remove('flex');
-            homeView.classList.remove('hidden');
-            stopTimer();
-        }
-        
-        function showWinScreen() {
-            stopTimer();
-            const timeElapsed = Math.floor((new Date() - startTime) / 1000);
-            const minutes = Math.floor(timeElapsed / 60);
-            const seconds = timeElapsed % 60;
+        closeLessonBtn.addEventListener('click', closeLesson);
+        finishLessonBtn.addEventListener('click', closeLesson);
+        optionsContainer.addEventListener('click', handleOptionClick);
+        checkBtn.addEventListener('click', handleCheck);
+        continueBtn.addEventListener('click', handleContinue);
 
-            finalScoreEl.textContent = score;
-            xpGainedEl.textContent = `+${score / 10}`;
-            timeTakenEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-            quizView.classList.add('hidden');
-            quizView.classList.remove('flex');
-            winView.classList.remove('hidden');
-            winView.classList.add('flex');
-        }
-
-        function startTimer() {
-            startTime = new Date();
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
-
-        function loadQuestion(index) {
-            resetQuestionState();
-            const question = quizData[index];
-            quizQuestion.textContent = question.question;
-            quizOptionsContainer.innerHTML = '';
-            
-            question.options.forEach((optionText, i) => {
-                const optionElement = document.createElement('button');
-                optionElement.className = 'quiz-option w-full text-left p
+    </script>
+</body>
+</html>
